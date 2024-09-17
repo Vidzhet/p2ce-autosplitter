@@ -1,0 +1,11 @@
+#pragma once
+#define WIN32_LEAN_AND_MEAN
+#include <iostream>
+#include <Windows.h>
+#include <TlHelp32.h>
+#include <string>
+#include <vector>
+#include <stdexcept>
+#include <thread>
+#include <chrono>
+#include <set>
