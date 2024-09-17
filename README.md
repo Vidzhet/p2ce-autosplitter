@@ -2,4 +2,4 @@
 LiveSplit autosplitter for strata source portal mods.
 
 ***Currently supports:***
-- Portal Revolution;
+- Portal Revolution
