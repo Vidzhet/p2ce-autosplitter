@@ -1,0 +1,240 @@
+<root>
+	<styles>
+		<include src="file://{resources}/styles/main.scss" />
+		<include src="file://{resources}/styles/pages/play.scss" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/pages/play.js" />
+		<include src="file://{resources}/scripts/common/game-ui.js" />
+		<include src="file://{resources}/scripts/common/version.js" />
+		<include src="file://{resources}/scripts/common/action-button.js" />
+		<include src="file://{resources}/scripts/common/constants.js" />
+		<include src="file://{resources}/scripts/pages/main-menu.js" />
+	</scripts>
+
+	<snippets>
+		<snippet name="MainMenuMovieSnippet">
+			<Panel>
+			</Panel>
+		</snippet>
+	</snippets>
+
+	<!-- This panel has id="MainMenu". Obvious c++ has to programmatically set this instead of letting us set it ourselves
+	 because programmers just hate being able to know what values a thing has just by looking at its markup.-->
+	<ChaosMainMenu class="InitialDisplay MainMenuRootPanel"
+				   hittest="false"
+				   useglobalcontext="true"
+				   onload="MainMenu.onLoad()"
+				   disablefocusonmousedown="true"
+				   oncancel="MainMenu.onEscapeKeyPressed()">
+
+		<Panel id="MainMenuBgMapLoading" class="mainmenu__loading full">
+			<Image src="file://{images}/wallpapers/bg01.jpg"/>
+			<Label text="#Revolution_Loading"/>
+		</Panel>
+
+		<Panel id="MainMenuInput" class="mainmenu__parent"
+			   hittest="false"
+			   onfocus="MainMenu.onMainMenuFocused()"
+			   disablefocusonmousedown="true">
+
+			<Panel id="MainMenuMovieParent"/>
+
+			<BaseBlurTarget class="mainmenu__background-blur"
+							id="MainMenuBackgroundBlur"
+							blurrects="MainMenuBackground">
+				<ChaosBackbufferImagePanel class="full" />
+			</BaseBlurTarget>
+
+			<Panel class="mainmenu__background" id="MainMenuBackground"
+				   hittest="false"
+				   disablefocusonmousedown="true"/>
+
+			<Panel id="MainMenuLogo" class="mainmenu__logo">
+				<Image src="file://{images}/logos/portalrevolution-logo-light.svg"
+					   scaling="stretch-to-fit-preserve-aspect"/>
+			</Panel>
+
+			<Panel class="pages" id="MainMenuPagesParent" hittest="false">
+				<Panel id="MainMenuPlayParent" class="hidden" hittest="false"/>
+				<Panel id="MainMenuLoadParent" class="hidden" hittest="false"/>
+				<Panel id="MainMenuOptionsParent" class="hidden" hittest="false"/>
+				<Panel id="MainMenuAchievementsParent" class="hidden" hittest="false"/>
+			</Panel>
+
+			<Panel class="dialog dialog-dropshadow mainmenu__home-list" id="MainMenuHomeList">
+
+				<Panel class="dialog__header dialog__header-tab">
+					<Label text="#Revolution_Dialog_MainMenu_Header"/>
+				</Panel>
+
+				<Panel class="dialog__body dialog__body-action-list" childfocusonhover="true">
+
+					<Button class="dialog__body-action-item dialog__body-action-item-important pauseonly"
+							onactivate="MainMenu.onContinueButtonPressed()"
+							selectionpos="auto" tabindex="auto"
+							onmoveright="$('#Dlc').SetFocus()"
+							id="MainMenuListButtonContinue">
+						<Label text="#Revolution_Continue"/>
+					</Button>
+					
+					<Button class="dialog__body-action-item dialog__body-action-item-important mainonly"
+							onactivate="MainMenu.onSTARTSPEEDRUN()"
+							selectionpos="auto" tabindex="auto"
+							onmoveright="$('#Dlc').SetFocus()"
+							id="p2ce-autosplitterSTART">
+						<Label text="START SPEEDRUN"/>
+					</Button>
+
+					<Button class="dialog__body-action-item dialog__body-action-item-important mainonly"
+							onactivate="MainMenu.onPlayButtonPressed()"
+							selectionpos="auto" tabindex="auto"
+							onmoveright="$('#Dlc').SetFocus()"
+							id="MainMenuListButtonPlay">
+						<Label text="#Revolution_New_Game"/>
+					</Button>
+
+					<Button class="dialog__body-action-item dialog__body-action-item-important"
+							onactivate="MainMenu.onLoadButtonPressed()"
+							selectionpos="auto" tabindex="auto"
+							onmoveright="$('#Dlc').SetFocus()"
+							id="MainMenuListButtonLoad">
+						<Label text="#Revolution_LoadGame" class="mainonly"/>
+						<Label text="#Revolution_SaveGame" class="pauseonly"/>
+					</Button>
+
+					<Button class="dialog__body-action-item dialog__body-action-item-important"
+							onactivate="MainMenu.onOptionsButtonPressed()"
+							selectionpos="auto" tabindex="auto"
+							onmoveright="$('#Dlc').SetFocus()"
+							id="MainMenuListButtonOptions">
+						<Label text="#Revolution_Options"/>
+					</Button>		
+					<!--
+				<Button class="mainmenu__home-list-item button button__big"
+						onactivate="MainMenu.onAchievementsButtonPressed()"
+						selectionpos="auto" tabindex="auto"
+						id="MainMenuListButtonAchievements">
+					<Label text="#Revolution_Achievements" class="button__text"/>
+				</Button>
+-->
+					<Panel class="dialog__body-action-separator"/>
+
+					<Button class="dialog__body-action-item dialog__body-action-item-important mainonly"
+							selectionpos="auto" tabindex="auto"
+							onactivate="MainMenu.onQuitButtonPressed()"
+							onmoveright="$('#Dlc').SetFocus()"
+							id="MainMenuListButtonQuit">
+						<Label text="#Revolution_Quit"/>
+					</Button>
+
+					<Button class="dialog__body-action-item dialog__body-action-item-important pauseonly"
+							selectionpos="auto" tabindex="auto"
+							onactivate="MainMenu.onDisconnectButtonPressed()"
+							id="MainMenuListButtonDisconnect">
+						<Label text="#Revolution_ToMainMenu"/>
+					</Button>
+
+				</Panel>
+
+				<Panel class="dialog__footer">
+					<Label text="" id="VersionInfo" style="font-style: normal"/>
+					<Label text="#Revolution_Dialog_MainMenu_Footer"/>
+				</Panel>
+				
+				<Panel class="dialog__footer">
+					<Label text="by: vidzhet" style="font-style: normal"/>
+					<Label text="p2ce-autosplitter v0.1"/>
+				</Panel>
+
+			</Panel>
+			
+			<Button class="restartlevelbtn pauseonly"
+                    onactivate="MainMenu.onRESTARTLEVEL()"
+                    id="RestartLevel">
+                <Label class="button__text" text="Restart Level"
+						selectionpos="auto" tabindex="auto"/>
+            </Button>
+			
+			<Button class="restartspeedrunbtn pauseonly"
+                    onactivate="MainMenu.onRestartSpeedrun()"
+                    id="RestartSpeedrun">
+                <Label class="button__text" text="Restart Speedrun"
+						selectionpos="auto" tabindex="auto"/>
+            </Button>
+			
+			<Button id="GitHub"
+					class="github"
+					onactivate="MainMenu.onClickGitHubBtn()"
+					onmoveleft="$('#MainMenuListButtonPlay').SetFocus()">
+				<Image class="github-icon" src="file://{images}/icons/svg/link-intact.svg"/>
+				<Label class="github-label" text="GITHUB"/>
+			</Button>
+
+			<Button id="Dlc"
+					class="dlc mainonly"
+					onactivate="MainMenu.onClickSupportBtn()"
+					onmoveleft="$('#MainMenuListButtonPlay').SetFocus()">
+				<Image class="dlc-icon" src="file://{images}/icons/svg/companion-heart.svg"/>
+				<Label class="dlc-label" text="#Plush_SupportUs"/>
+			</Button>
+
+			<Panel class="pages__footer hidden" id="MainMenuPagesFooter">
+
+				<Button onactivate="MainMenu.onBackHome()"
+						class="button button-action"
+						id="ActionButtonBack"
+						selectionpos="auto"
+						onmoveup="MainMenu.onBackHomeReturnUp()"
+						tabindex="auto">
+					<Image src="file://{images}/hints/steamdeck/SteamDeck_B.png" class="button__icon only-steam"/>
+					<Image src="file://{images}/hints/xbox/XboxSeriesX_B.png" class="button__icon only-xbox"/>
+					<Image src="file://{images}/hints/ps5/PS5_Circle.png" class="button__icon only-playstation"/>
+					<Label text="#Revolution_Back" class="button__text"/>
+				</Button>
+
+				<Button class="button button-action"
+						id="ActionButtonEnter"
+						selectionpos="auto"
+						onmoveup="MainMenu.onBackHomeReturnUp()"
+						tabindex="auto">
+					<Image src="file://{images}/hints/steamdeck/SteamDeck_A.png" class="button__icon only-steam"/>
+					<Image src="file://{images}/hints/xbox/XboxSeriesX_A.png" class="button__icon only-xbox"/>
+					<Image src="file://{images}/hints/ps5/PS5_Cross.png" class="button__icon only-playstation"/>
+					<Label text="Enter" class="button__text" id="ActionButtonEnter_Label"/>
+				</Button>
+
+				<Button class="button button-action"
+						id="ActionButton1"
+						selectionpos="auto"
+						onmoveup="MainMenu.onBackHomeReturnUp()"
+						tabindex="auto">
+					<Image src="file://{images}/hints/steamdeck/SteamDeck_X.png" class="button__icon only-steam"/>
+					<Image src="file://{images}/hints/xbox/XboxSeriesX_X.png" class="button__icon only-xbox"/>
+					<Image src="file://{images}/hints/ps5/PS5_Square.png" class="button__icon only-playstation"/>
+					<Label text="Button 1" class="button__text" id="ActionButton1_Label"/>
+				</Button>
+
+				<Button class="button button-action"
+						id="ActionButton2"
+						selectionpos="auto"
+						onmoveup="MainMenu.onBackHomeReturnUp()"
+						tabindex="auto">
+					<Image src="file://{images}/hints/steamdeck/SteamDeck_Y.png" class="button__icon only-steam"/>
+					<Image src="file://{images}/hints/xbox/XboxSeriesX_Y.png" class="button__icon only-xbox"/>
+					<Image src="file://{images}/hints/ps5/PS5_Triangle.png" class="button__icon only-playstation"/>
+					<Label text="Button 2" class="button__text" id="ActionButton2_Label"/>
+				</Button>
+
+			</Panel>
+		</Panel>
+
+		<!-- Make sure these are at the bottom to get the z-order right -->
+		<ChaosPopupManager id="PopupManager" onpopupsdismissed="" />
+		<ContextMenuManager id="ContextMenuManager" />
+		<ChaosTooltipManager id="TooltipManager" hittest="false" />
+
+		<!-- Doesn't actually include the notifications, but we use its position to figure out where to show them -->
+		<Panel id="SteamNotificationsPlaceholder" hittest="false" />
+	</ChaosMainMenu>
+</root>

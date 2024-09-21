@@ -6,6 +6,7 @@
 #include "includes.h"
 #define CATCH_CONSOLE_DEBUG true
 
+//library for send commands to livesplt
 namespace ServerSplitter {
     template<class T>
     class smartptr {
@@ -35,6 +36,12 @@ namespace ServerSplitter {
         void split();
         void reset();
         void skip();
+        void unsplit();
+        void pauseGametime();
+        void resumeGametime();
+        void setcomparison(std::string comparison);
+        void setgametime(const std::string& time);
+        std::string gettime();
     };
 
     bool sendCommand(const std::string& command);

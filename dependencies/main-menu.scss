@@ -1,0 +1,401 @@
+@use "../config" as *;
+
+$menu-screen-padding: 80px;
+$menu-column-width: 480px;
+
+$menu-logo-retracted-height: 110px;
+$menu-logo-retracted-margin: 30px;
+
+$menu-sidebar-btn-width: 320px;
+$menu-sidebar-btn-height: 60px;
+
+#TooltipManager,
+#ContextMenuManager,
+#PopupManager,
+.MainMenuRootPanel {
+	width: 100%;
+	height: 100%;
+}
+
+.mainmenu__parent {
+    width: 100%;
+    height: 100%;
+
+    opacity: 0;
+    transition: opacity 1s ease-out 0.25s;
+}
+.mainmenu__loaded {
+    opacity: 1;
+}
+
+.mainmenu__loading {
+
+}
+
+.mainmenu__loading > Image {
+    height: 100%;
+    width: height-percentage(177%);
+    blur: fastgaussian(6, 6, 4);
+}
+
+.mainmenu__loading > Label {
+    horizontal-align: center;
+    vertical-align: center;
+
+    padding: 28px 32px;
+    background-color: rgba(15, 15, 15, 0.65);
+    border-radius: 12px;
+
+    font-family: $font-secondary;
+    text-align: center;
+    font-size: 45px;
+    text-transform: uppercase;
+}
+
+//.mainmenu__loading.hidden {
+.mainmenu__loading {
+    visibility: collapse;
+}
+
+.mainmenu__background-blur {
+    height: 100%;
+    width: 100%;
+    brightness: 1;
+    transition: blur 0.1s ease-in-out 0s;
+    blur: fastgaussian( 5, 5, 0 );
+}
+
+.mainmenu__background {
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.01);
+    opacity: 1;
+}
+
+.mainmenu__parent-pageopen .mainmenu__background-blur {
+    blur: fastgaussian( 8, 8, 4 );
+}
+
+.mainmenu__parent-pausemode .mainmenu__background-blur {
+    blur: fastgaussian( 5, 5, 3 );
+}
+
+.mainmenu__bottom-left {
+    height: 100%;
+    width: 50%;
+}
+
+.mainmenu__playtest {
+    vertical-align: bottom;
+    horizontal-align: right;
+    margin-right: $menu-screen-padding;
+    margin-bottom: $menu-screen-padding;
+
+    flow-children: down;
+}
+
+.mainmenu__playtest > Label {
+    width: fill-parent-flow(1);
+    text-align: right;
+}
+
+.mainmenu__logo {
+    vertical-align: top;
+    horizontal-align: left;
+    margin-left: $menu-screen-padding;
+    margin-top: $menu-screen-padding;
+    width: $menu-column-width;
+    height: fit-children;
+
+    blur: fastgaussian( 0.4 );
+}
+
+.mainmenu__logo > Image {
+    height: 180px;
+    transition: opacity 0.25s ease-in-out 0s;
+}
+
+.mainmenu__logo.retract > Image {
+    //height: $menu-logo-retracted-height;
+    opacity: 0;
+}
+
+.mainmenu__home-list {
+    vertical-align: bottom;
+    horizontal-align: left;
+
+    margin-left: $menu-screen-padding;
+    margin-bottom: $menu-screen-padding * 1;
+    
+    min-width: $menu-column-width;
+    width: $menu-column-width;
+    height: fit-children;
+
+    opacity: 1;
+
+    &.anim {
+        transition: transform 0.5s ease-in-out 0s, opacity 0.25s ease-out 0s;
+    }
+}
+
+.mainmenu__home-list.hidden {
+    transform: translateX(-600px);
+    opacity: 0;
+}
+
+.mainmenu__home-list-item {
+    width: 100%;
+    margin-bottom: 20px;
+    min-height: 10px;
+}
+
+.mainmenu__home-list-item-last {
+    margin-bottom: 0;
+}
+
+.mainmenu__home-list-item .button__text {
+    width: 100%;
+    text-align: left;
+}
+
+.mainmenu__home-list-separator {
+    height: 50px;
+}
+
+.pages__footer {
+    vertical-align: bottom;
+    horizontal-align: left;
+    padding: $menu-screen-padding;
+    flow-children: right;
+
+    &.anim {
+        transition: opacity 0.3s ease-out 0s, transform 0.3s ease-out 0s;
+    }
+}
+
+.pages {
+    width: 100%;
+    height: 100%;
+}
+
+.pages > Panel {
+    width: 100%;
+    height: 100%;
+
+    horizontal-align: center;
+    vertical-align: center;
+
+    flow-children: down;
+
+    padding: $menu-screen-padding;
+    padding-top: $menu-screen-padding;
+    padding-bottom: $menu-screen-padding + $menu-sidebar-btn-height + $menu-logo-retracted-margin;
+
+    &.anim {
+        transition: opacity 0.3s ease-out 0s, transform 0.3s ease-out 0s;
+    }
+}
+
+.pages > Panel.hidden,
+.pages__footer.hidden {
+    opacity: 0;
+    transform: translateY(100px);
+}
+
+.page {
+    width: 100%;
+    height: 100%;
+
+    flow-children: down;
+}
+
+.pauseonly {
+    visibility: collapse;
+}
+
+.mainonly {
+    visibility: visible;
+}
+
+.mainmenu__parent-pausemode .pauseonly {
+    visibility: visible;
+}
+
+.mainmenu__parent-pausemode .mainonly {
+    visibility: collapse;
+}
+
+$github-blue: #6BB5FF;
+.github {
+    vertical-align: bottom;
+    horizontal-align: right;
+
+    margin-right: 80px;
+    margin-bottom: 180px;
+
+    background-color: rgba(25, 25, 25, 0.8);
+    padding: 15px;
+
+    border: 5px solid transparent;
+    border-radius: 12px;
+
+    transition: border 0.25s ease-in-out 0s,
+                background-color 0.25s ease-in-out 0s;
+
+    flow-children: right;
+
+    &:focus,
+    &:hover {
+        background-color: rgba(20, 20, 20, 0.5);
+        border-color: $github-blue;
+
+        .github-icon {
+            wash-color: $github-blue;
+        }
+        .github-label {
+            color: $github-blue;
+        }
+    }
+
+    &.hidden {
+        opacity: 0;
+    }
+}
+
+.github-icon {
+    $github-icon-size: 28px;
+    width: $github-icon-size;
+    height: $github-icon-size;
+    margin-right: 12px;
+
+    transition: wash-color 0.25s ease-in-out 0s;
+}
+
+.github-label {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    vertical-align: center;
+    text-transform: uppercase;
+
+    transition: color 0.25s ease-in-out 0s;
+}
+
+$companion-pink: #C860E6;
+.dlc {
+    vertical-align: bottom;
+    horizontal-align: right;
+
+    margin-right: $menu-screen-padding;
+    margin-bottom: $menu-screen-padding;
+
+    background-color: rgba(25, 25, 25, 0.8);
+    padding: 15px;
+
+    border: 5px solid transparent;
+    border-radius: 12px;
+
+    transition: border 0.25s ease-in-out 0s,
+                background-color 0.25s ease-in-out 0s;
+
+    flow-children: right;
+
+    &:focus,
+    &:hover {
+        background-color: rgba(20, 20, 20, 0.5);
+        border-color: $companion-pink;
+
+        .dlc-icon {
+            wash-color: $companion-pink;
+        }
+        .dlc-label {
+            color: $companion-pink;
+        }
+    }
+
+    &.hidden {
+        opacity: 0;
+    }
+}
+
+.dlc-icon {
+    $dlc-icon-size: 28px;
+    width: $dlc-icon-size;
+    height: $dlc-icon-size;
+    margin-right: 12px;
+
+    transition: wash-color 0.25s ease-in-out 0s;
+}
+
+.dlc-label {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    vertical-align: center;
+    text-transform: uppercase;
+
+    transition: color 0.25s ease-in-out 0s;
+}
+
+.restartspeedrunbtn {
+  background-color: rgba(10, 10, 10, 0.75);
+  border-color: rgba(250, 250, 250, 0.9);
+  height: 65px;
+  transition: none;
+  min-width: 140px;
+  
+  vertical-align: bottom;
+  horizontal-align: right;
+  
+  margin-right: 1080px;
+  margin-bottom: 139px;
+  
+  transition: border 0.25s ease-in-out 0s,
+                background-color 0.25s ease-in-out 0s;
+
+  Label {
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  &:hover {
+    background-color: rgba(10, 10, 10, 0.98);
+    border: 2px solid rgb(255, 255, 255);
+  }
+  
+  &.hidden {
+        opacity: 0;
+    }
+}
+
+.restartlevelbtn {
+  background-color: rgba(10, 10, 10, 0.75);
+  border-color: rgba(250, 250, 250, 0.9);
+  height: 65px;
+  transition: none;
+  min-width: 140px;
+  
+  vertical-align: bottom;
+  horizontal-align: right;
+  
+  margin-right: 1139px;
+  margin-bottom: 223px;
+  
+  transition: border 0.25s ease-in-out 0s,
+                background-color 0.25s ease-in-out 0s;
+
+  Label {
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  &:hover {
+    background-color: rgba(10, 10, 10, 0.98);
+    border: 2px solid rgb(255, 255, 255);
+  }
+
+  &.hidden {
+        opacity: 0;
+    }
+}

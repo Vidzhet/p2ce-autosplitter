@@ -129,11 +129,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="misc.cpp" />
+    <ClCompile Include="panorama.cpp" />
     <ClCompile Include="timercontrol.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="readmem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="misc.h" />
+    <ClInclude Include="offsets.h" />
+    <ClInclude Include="panorama.h" />
     <ClInclude Include="timercontrol.h" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="readmem.h" />

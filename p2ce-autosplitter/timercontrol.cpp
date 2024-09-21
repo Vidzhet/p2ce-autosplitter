@@ -42,7 +42,7 @@ ServerSplitter::Timer::~Timer()
     WSACleanup();
 }
 void ServerSplitter::Timer::sendCommand(const std::string& command) {
-    std::string fullCommand = command + "\n";
+    std::string fullCommand = command + "\r\n";
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         throw std::runtime_error("WSAStartup failed");
@@ -92,6 +92,51 @@ void ServerSplitter::Timer::skip()
 {
     Timer::sendCommand("skipsplit");
 }
+void ServerSplitter::Timer::unsplit()
+{
+    Timer::sendCommand("unsplit");
+}
+void ServerSplitter::Timer::pauseGametime()
+{
+    Timer::sendCommand("pausegametime");
+}
+void ServerSplitter::Timer::resumeGametime()
+{
+    Timer::sendCommand("unpausegametime");
+}
+void ServerSplitter::Timer::setcomparison(std::string comparison)
+{
+    std::string command = "setcomparison " + comparison;
+    Timer::sendCommand(command);
+}
+void ServerSplitter::Timer::setgametime(const std::string& time) {
+    std::string command = "setgametime " + time;
+    sendCommand(command);
+}
+std::string ServerSplitter::Timer::gettime()
+{
+    std::string command = "getcurrenttime\r\n";
+
+    if (send(ConnectSocket, command.c_str(), (int)command.length(), 0) == SOCKET_ERROR) {
+        closesocket(ConnectSocket);
+        WSACleanup();
+        throw std::runtime_error("Failed to send gettime command.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    }
+
+    char buffer[1024];
+    int recvResult = recv(ConnectSocket, buffer, sizeof(buffer), 0);
+    if (recvResult > 0) {
+        buffer[recvResult] = '\0'; // Ensure the buffer is null-terminated
+        return std::string(buffer);
+    }
+    else if (recvResult == 0) {
+        throw std::runtime_error("Connection closed by server.");
+    }
+    else {
+        throw std::runtime_error("recv failed.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    }
+}
+
 
 bool ServerSplitter::sendCommand(const std::string& command) {
     WSADATA wsaData;
