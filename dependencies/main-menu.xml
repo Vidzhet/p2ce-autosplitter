@@ -1,10 +1,8 @@
 <root>
 	<styles>
 		<include src="file://{resources}/styles/main.scss" />
-		<include src="file://{resources}/styles/pages/play.scss" />
 	</styles>
 	<scripts>
-		<include src="file://{resources}/scripts/pages/play.js" />
 		<include src="file://{resources}/scripts/common/game-ui.js" />
 		<include src="file://{resources}/scripts/common/version.js" />
 		<include src="file://{resources}/scripts/common/action-button.js" />

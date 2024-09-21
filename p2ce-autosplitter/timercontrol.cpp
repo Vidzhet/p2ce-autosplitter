@@ -59,8 +59,11 @@ void ServerSplitter::Timer::sendCommand(const std::string& command) {
     }
 
     int sendResult = send(ConnectSocket, fullCommand.c_str(), (int)fullCommand.length(), 0);
-    if (sendResult == SOCKET_ERROR) {
-        throw std::runtime_error("Failed to send message.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    while (sendResult == SOCKET_ERROR) {
+        std::cout << "Failed to send message.\n"; // debug instead of throwing exeption
+        sendResult = send(ConnectSocket, fullCommand.c_str(), (int)fullCommand.length(), 0); // attept to fix problem below
+        //throw std::runtime_error("Failed to send message.\tWSAGetLastError: " + std::to_string(WSAGetLastError())); // throws error sometimes
+        Sleep(100);
     }
 }
 void ServerSplitter::Timer::start()
