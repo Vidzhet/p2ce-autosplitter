@@ -147,6 +147,18 @@
 
 			</Panel>
 			
+			<Panel class="log-label-red">
+                <Label text="LiveSplit is not connected! "/>
+            </Panel>
+			
+			<Panel class="log-label-green">
+                <Label text="LiveSplit connected. "/>
+            </Panel>
+			
+			<Panel class="console-log">
+                <Label text="console-log: ..."/>
+            </Panel>
+			
 			<Button class="restartlevelbtn pauseonly"
                     onactivate="MainMenu.onRESTARTLEVEL()"
                     id="RestartLevel">

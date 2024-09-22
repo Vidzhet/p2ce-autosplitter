@@ -399,3 +399,67 @@ $companion-pink: #C860E6;
         opacity: 0;
     }
 }
+
+.log-label-red {
+  height: 65px;
+  transition: none;
+  min-width: 140px;
+  
+  vertical-align: top;
+  horizontal-align: right;
+  
+  margin-right: 0px;
+  margin-top: 33px;
+
+  Label {
+    font-size: 18px;
+    font-weight: bold;
+	color: #ff5c5c;
+  }
+
+  &.hidden {
+        opacity: 0;
+    }
+}
+
+.log-label-green {
+  height: 65px;
+  transition: none;
+  min-width: 140px;
+  
+  vertical-align: top;
+  horizontal-align: right;
+  
+  margin-right: 0px;
+  margin-top: 33px;
+
+  Label {
+    font-size: 18px;
+    font-weight: bold;
+	color: #5cff7a;
+  }
+
+  &.hidden {
+        opacity: 0;
+    }
+}
+
+.console-log {
+  height: 65px;
+  transition: none;
+  min-width: 140px;
+  
+  vertical-align: top;
+  horizontal-align: left;
+  
+  margin-left: 1800px;
+  margin-top: 55px;
+
+  Label {
+    font-size: 15px;
+  }
+
+  &.hidden {
+        opacity: 0;
+    }
+}
