@@ -1,6 +1,6 @@
 #include "timercontrol.h"
 
-ServerSplitter::Timer::Timer()
+ServerSplitter::Timer::Timer(bool noinit)
 {
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         throw std::runtime_error("WSAStartup failed");
@@ -20,20 +20,21 @@ ServerSplitter::Timer::Timer()
         WSACleanup();
         throw std::runtime_error("inet_pton failed or invalid IP address");
     }
-
-    if (connect(ConnectSocket, (SOCKADDR*)&clientService, sizeof(clientService)) == SOCKET_ERROR) {
-        closesocket(ConnectSocket);
-        WSACleanup();
-        throw std::runtime_error("Failed to connect to the server.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
-    }
-
-    // send test message
-    std::string testcommand = "reset\n";
-    int sendResult = send(ConnectSocket, testcommand.c_str(), (int)testcommand.length(), 0);
-    if (sendResult == SOCKET_ERROR) {
-        closesocket(ConnectSocket);
-        WSACleanup();
-        throw std::runtime_error("Failed to send message.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    if (!noinit) {
+        if (connect(ConnectSocket, (SOCKADDR*)&clientService, sizeof(clientService)) == SOCKET_ERROR) {
+            closesocket(ConnectSocket);
+            WSACleanup();
+            throw std::runtime_error("Failed to connect to the server.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+        }
+    
+        // send test message
+        std::string testcommand = "switchto gametime\n\r";
+        int sendResult = send(ConnectSocket, testcommand.c_str(), (int)testcommand.length(), 0);
+        if (sendResult == SOCKET_ERROR) {
+            closesocket(ConnectSocket);
+            WSACleanup();
+            throw std::runtime_error("Failed to send message.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+        }
     }
 }
 ServerSplitter::Timer::~Timer()
@@ -47,6 +48,7 @@ void ServerSplitter::Timer::sendCommand(const std::string& command) {
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         throw std::runtime_error("WSAStartup failed");
     }
+
     this->ConnectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (ConnectSocket == INVALID_SOCKET) {
         WSACleanup();
@@ -140,6 +142,30 @@ std::string ServerSplitter::Timer::gettime()
     }
 }
 
+std::string ServerSplitter::Timer::ping()
+{
+    std::string command = "ping\r\n";
+
+    if (send(ConnectSocket, command.c_str(), (int)command.length(), 0) == SOCKET_ERROR) {
+        closesocket(ConnectSocket);
+        WSACleanup();
+        throw std::runtime_error("Failed to ping LiveSplit.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    }
+
+    char buffer[1024];
+    int recvResult = recv(ConnectSocket, buffer, sizeof(buffer), 0);
+    if (recvResult > 0) {
+        buffer[recvResult] = '\0'; // Ensure the buffer is null-terminated
+        return std::string(buffer);
+    }
+    else if (recvResult == 0) {
+        throw std::runtime_error("Connection closed by server.");
+    }
+    else {
+        throw std::runtime_error("recv failed.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    }
+}
+
 
 bool ServerSplitter::sendCommand(const std::string& command) {
     WSADATA wsaData;
@@ -213,12 +239,12 @@ void ServerSplitter::resetTimer() {
 
 ServerSplitter::Timer ServerSplitter::createTimer(bool debug)
 {
-    smartptr<Timer> timer(nullptr);
+    std::shared_ptr<Timer> timer(nullptr);
     while (true) {
         try {
-            timer = new Timer();
+            timer = std::make_shared<Timer>();
         }
-        catch (std::runtime_error ex) {
+        catch (std::runtime_error& ex) {
             if (debug) {
                 std::cout << std::endl << ex.what();
             }
@@ -228,29 +254,4 @@ ServerSplitter::Timer ServerSplitter::createTimer(bool debug)
         break;
     }
     return *timer;
-}
-
-template<class T>
-ServerSplitter::smartptr<T>::smartptr(T* ptr)
-{
-    this->ptr = ptr;
-}
-
-template<class T>
-ServerSplitter::smartptr<T>::~smartptr()
-{
-    delete ptr;
-}
-
-template<class T>
-T ServerSplitter::smartptr<T>::operator*()
-{
-    return *ptr;
-}
-
-template<class T>
-void ServerSplitter::smartptr<T>::operator=(T* ptr)
-{
-    delete this->ptr;
-    this->ptr = ptr;
 }

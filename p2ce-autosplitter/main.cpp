@@ -58,8 +58,13 @@ int main() {
     uintptr_t endAddress = clientBaseAddress + 0x1A4BDA2C; // or +0x1A4BDA30 or  +0x1A4BDA34 (they are the same)
     std::cout << "\t\tDone!\n";
 
+    ServerSplitter::Timer timer(TIMER_NOINIT);
+
+    std::thread loglabelThread(start_loglabel, processHandle, panoramaBaseAddress, std::ref(timer));
+    loglabelThread.detach();
+
     std::cout << "Connecting to LiveSplit...";
-    ServerSplitter::Timer timer = ServerSplitter::createTimer(CATCH_CONSOLE_DEBUG);
+    //timer = ServerSplitter::createTimer(CATCH_CONSOLE_DEBUG); // CATCH_CONSOLE_DEBUG if wanna see console output
     std::cout << "\tDone!\n";
 
     std::cout << "*Status address: " << std::hex << statusAddress << std::dec << std::endl;

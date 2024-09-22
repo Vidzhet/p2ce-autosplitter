@@ -2,7 +2,7 @@
 
 void monitorStatus(const HANDLE &processHandle, const LPCVOID &targetAddress, const LPCVOID& mapAddress, ServerSplitter::Timer& timer)
 {
-    std::cout << "statusThread started.\n";
+    //std::cout << "statusThread started.\n";
     bool timerOn = true;
     for (int value = 0, map = 0; true; ReadProcessMemory(processHandle, targetAddress, &value, sizeof(value), nullptr), ReadProcessMemory(processHandle, mapAddress, &map, sizeof(map), nullptr)) {
         //std::cout << "Status value:\t" << value << std::endl;
@@ -20,7 +20,7 @@ void monitorStatus(const HANDLE &processHandle, const LPCVOID &targetAddress, co
         }
         Sleep(1);
     }
-    std::cout << "statusThread done working!\n";
+    //std::cout << "statusThread done working!\n";
 }
 
 void monitorMap(const HANDLE &processHandle, const LPCVOID &mapAddress, ServerSplitter::Timer& timer)
@@ -104,7 +104,7 @@ void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LP
 #else
 // rewrite of monitorMap, now it uses exactly map bsp names instead of map ids
 void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, const LPCVOID& statusAddress, ServerSplitter::Timer& timer) {
-    std::cout << "bspThread started.\n";
+    //std::cout << "bspThread started.\n";
     bool nextmap = false;
     bool split = false;
     int status = 0;
@@ -148,29 +148,39 @@ void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LP
         }
         Sleep(1);
     }
-    std::cout << "bspThread done working!\n";
+    //std::cout << "bspThread done working!\n";
 }
 #endif
 void monitorReset(const HANDLE& processHandle, const LPCVOID& statusAddress, const LPCVOID& mapAddress, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer)
 {
-    timer.sendCommand("switchto gametime");
-    bool restarted = false;
-    for (int status = 0, map = 0; true; ReadProcessMemory(processHandle, statusAddress, &status, sizeof(status), nullptr), ReadProcessMemory(processHandle, mapAddress, &map, sizeof(map), nullptr)) {
-        if (status == 1 && map == MAP_WAKEUP_SAVE && restarted) {
-            timer.start();
-            timer.setgametime("0.00");
-            restarted = false;
-            std::thread statusThread(monitorStatus, processHandle, (LPCVOID)statusAddress, (LPCVOID)mapAddress, std::ref(timer));
-            std::thread bspThread(monitorBsp, processHandle, (LPCVOID)bspAddress, (LPCVOID)endAddress, (LPCVOID)statusAddress, std::ref(timer)); // using bsp monitoring method instead of id monitoring
-            //std::thread mapThread(monitorMap, processHandle, (LPCVOID)mapAddress, std::ref(timer));
-            statusThread.detach();
-            bspThread.detach();
-            //mapThread.detach();
+    while (true) {
+        try
+        {
+            timer.sendCommand("switchto gametime");
+            bool restarted = false;
+            for (int status = 0, map = 0; true; ReadProcessMemory(processHandle, statusAddress, &status, sizeof(status), nullptr), ReadProcessMemory(processHandle, mapAddress, &map, sizeof(map), nullptr)) {
+                if (status == 1 && map == MAP_WAKEUP_SAVE && restarted) {
+                    timer.start();
+                    timer.setgametime("0.00");
+                    restarted = false;
+                    std::thread statusThread(monitorStatus, processHandle, (LPCVOID)statusAddress, (LPCVOID)mapAddress, std::ref(timer));
+                    std::thread bspThread(monitorBsp, processHandle, (LPCVOID)bspAddress, (LPCVOID)endAddress, (LPCVOID)statusAddress, std::ref(timer)); // using bsp monitoring method instead of id monitoring
+                    //std::thread mapThread(monitorMap, processHandle, (LPCVOID)mapAddress, std::ref(timer));
+                    statusThread.detach();
+                    bspThread.detach();
+                    //mapThread.detach();
+                }
+                else if (map == MAP_WAKEUP_TRIGGER && !restarted) {
+                    timer.reset();
+                    restarted = true;
+                }
+                Sleep(1);
+            }
         }
-        else if (map == MAP_WAKEUP_TRIGGER && !restarted) {
-            timer.reset();
-            restarted = true;
+        catch (const std::runtime_error& ex)
+        {
+            Sleep(2000);
+            continue;
         }
-        Sleep(1);
-    }
+    } 
 }

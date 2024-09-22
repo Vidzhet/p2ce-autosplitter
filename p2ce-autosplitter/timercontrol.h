@@ -5,20 +5,10 @@
 #pragma comment(lib, "ws2_32.lib")
 #include "includes.h"
 #define CATCH_CONSOLE_DEBUG true
+#define TIMER_NOINIT true
 
 //library for send commands to livesplt
 namespace ServerSplitter {
-    template<class T>
-    class smartptr {
-    private:
-        T* ptr;
-    public:
-        smartptr(T* ptr);
-        ~smartptr();
-        T operator *();
-        void operator =(T* ptr);
-    };
-
     class Timer {
     private:
         WSADATA wsaData;
@@ -26,7 +16,7 @@ namespace ServerSplitter {
         struct sockaddr_in clientService;
         int result;
     public:
-        Timer();
+        Timer(bool noinit = false);
         ~Timer();
         void sendCommand(const std::string& command);
         void start();
@@ -42,6 +32,7 @@ namespace ServerSplitter {
         void setcomparison(std::string comparison);
         void setgametime(const std::string& time);
         std::string gettime();
+        std::string ping();
     };
 
     bool sendCommand(const std::string& command);
