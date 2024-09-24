@@ -10,23 +10,37 @@ void editMainMenu(HANDLE processHandle, uintptr_t panoramaBaseAddress, uintptr_t
     //WriteProcessMemory(processHandle, (LPVOID)labelAddress, "START SPEEDRUN", 32, NULL); // 32 bytes is limit for this type of strings for engine, higher value can cause many errors
 }
 
-void start_loglabel(HANDLE processHandle, uintptr_t panoramaBaseAddress, ServerSplitter::Timer& timer) {
-    uintptr_t loglabelRedAddress = ResolvePointerChain(processHandle, panoramaBaseAddress + 0x00555F28, loglabelRedOffsets);
+void start_loglabel(HANDLE processHandle, uintptr_t panoramaBaseAddress, LPCVOID mapAddress, ServerSplitter::Timer& timer) {
+    // wait till game loads.
+    for (int value = 0; value != MAP_MAIN_MENU; ReadProcessMemory(processHandle, mapAddress, &value, sizeof(value), nullptr)) {}
+    uintptr_t loglabelRedAddress = ResolvePointerChain(processHandle, panoramaBaseAddress + 0x004F4E58, loglabelRedOffsets);
     uintptr_t loglabelGreenAddress = ResolvePointerChain(processHandle, panoramaBaseAddress + 0x004F4E58, loglabelGreenOffsets);
-    WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, " ", 22, NULL); // makes green loglabel invisible
+    std::cout << "green address: " << std::hex << loglabelGreenAddress << std::dec << std::endl;
+    for (char value[64] = "null"; true; ReadProcessMemory(processHandle, (LPCVOID)loglabelGreenAddress, &value, sizeof(value) - 1, nullptr)) {
+        std::string str = value;
+        if (str == "    LiveSplit connected! ") {
+            break;
+        }
+    }
+    std::cout << "ready.\n";
+    WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "                              ", 31, NULL); // makes green loglabel invisible
+    WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "                                       ", 40, NULL);
+    //WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "LiveSplit is not connected! ", 29, NULL);
+    //Sleep(5000);
 
-    Sleep(1000);
     while (true) {
         try {
             timer.sendCommand("switchto gametime");
-            std::cout << "LiveSplit connected!\n";
-            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, " ", 32, NULL);
-            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "LiveSplit connected! ", 22, NULL);
+            //std::cout << "LiveSplit connected!\n";
+            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "                              ", 31, NULL);
+            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "                                       ", 40, NULL);
+            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "LiveSplit connected! ", 31, NULL);
         }
         catch (std::runtime_error& ex) {
-            std::cout << "LiveSplit is not connected!\n";
-            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, " ", 22, NULL);
-            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "LiveSplit is not connected! ", 32, NULL);
+            //std::cout << "LiveSplit is not connected!\n";
+            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "                                       ", 40, NULL);
+            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "                             ", 30, NULL);
+            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "LiveSplit is not connected! ", 29, NULL);
             //std::cout << ex.what() << std::endl;
             timer = ServerSplitter::createTimer();
         }

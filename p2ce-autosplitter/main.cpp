@@ -8,6 +8,8 @@
 
 int main() {
     setlocale(LC_ALL, "ru");
+
+    //getDemoPath();
     const std::wstring processName = L"revolution.exe";
 
     auto processID = GetProcessID(processName);
@@ -60,15 +62,15 @@ int main() {
 
     ServerSplitter::Timer timer(TIMER_NOINIT);
 
-    std::thread loglabelThread(start_loglabel, processHandle, panoramaBaseAddress, std::ref(timer));
-    loglabelThread.detach();
-
     std::cout << "Connecting to LiveSplit...";
     //timer = ServerSplitter::createTimer(CATCH_CONSOLE_DEBUG); // CATCH_CONSOLE_DEBUG if wanna see console output
     std::cout << "\tDone!\n";
 
     std::cout << "*Status address: " << std::hex << statusAddress << std::dec << std::endl;
     std::cout << "*Map address: " << std::hex << mapAddress << std::dec << std::endl;
+
+    std::thread loglabelThread(start_loglabel, processHandle, panoramaBaseAddress, (LPCVOID)mapAddress, std::ref(timer));
+    loglabelThread.detach();
 
     //editMainMenu(processHandle, panoramaBaseAddress , gameoverlayrenderer64BaseAddress);
     monitorReset(processHandle, (LPCVOID)statusAddress, (LPCVOID)mapAddress, (LPCVOID)bspAddress, (LPCVOID)endAddress, timer);

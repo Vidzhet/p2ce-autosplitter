@@ -49,22 +49,22 @@ uintptr_t ResolvePointerChain(HANDLE processHandle, uintptr_t baseAddress, const
     return currentAddress;
 }
 
-//std::string getDemoPath() {
-//    std::filesystem::path exec_path = std::filesystem::current_path();
-//    std::cout << "Current path: " << exec_path << std::endl;
-//
-//    auto now = std::chrono::system_clock::now();
-//    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-//    std::tm local_time = *std::localtime(&now_c);
-//
-//    std::ostringstream folder_name;
-//    folder_name << std::put_time(&local_time, "%Y-%m-%d_%H-%M");
-//
-//    std::filesystem::path new_folder = exec_path / folder_name.str();
-//    if (std::filesystem::create_directory(new_folder)) {
-//        std::cout << "Directory created: " << new_folder << std::endl;
-//    }
-//    else {
-//        std::cerr << "Failed to create directory." << std::endl;
-//    }
-//}
+void getDemoPath() {
+    std::filesystem::path exec_path = std::filesystem::current_path();
+    std::cout << "Current path: " << exec_path << std::endl;
+
+    /*auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    std::tm local_time = *std::localtime(&now_c);*/
+
+    //std::ostringstream folder_name;
+    //folder_name << std::put_time(&local_time_s, "%Y-%m-%d_%H-%M");
+
+    /*std::filesystem::path new_folder = exec_path / folder_name.str();
+    if (std::filesystem::create_directory(new_folder)) {
+        std::cout << "Directory created: " << new_folder << std::endl;
+    }
+    else {
+        std::cerr << "Failed to create directory." << std::endl;
+    }*/
+}
