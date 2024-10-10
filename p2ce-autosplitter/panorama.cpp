@@ -1,5 +1,8 @@
 #include "panorama.h"
 
+uintptr_t consolelogAddress; // global var for console_log()
+HANDLE processHandleBuffer; // this aswell
+
 void editMainMenu(HANDLE processHandle, uintptr_t panoramaBaseAddress, uintptr_t gameoverlayrenderer64BaseAddress)
 {
     //uintptr_t scriptAddress = ResolvePointerChain(processHandle, panoramaBaseAddress + 0x004F4E58, scriptOffsets);
@@ -18,11 +21,15 @@ void start_loglabel(HANDLE processHandle, uintptr_t panoramaBaseAddress, LPCVOID
     std::cout << "green address: " << std::hex << loglabelGreenAddress << std::dec << std::endl;
     for (char value[64] = "null"; true; ReadProcessMemory(processHandle, (LPCVOID)loglabelGreenAddress, &value, sizeof(value) - 1, nullptr)) {
         std::string str = value;
-        if (str == "    LiveSplit connected! ") {
+        if (str == "    LiveSplit connected!  ") {
             break;
         }
     }
-    std::cout << "ready.\n";
+    processHandleBuffer = processHandle; // init for consolelog
+    consolelogAddress = ResolvePointerChain(processHandle, panoramaBaseAddress + 0x004F4E58, consolelogOffsets); // init consolelog
+    //WriteProcessMemory(processHandle, (LPVOID)consolelogAddress, "                                         console-log: ... ", 59, NULL); // init consolelog
+    WriteProcessMemory(processHandle, (LPVOID)consolelogAddress, "                                                          ", 59, NULL); // idi nahui consol-log
+    //std::cout << "ready.\n";
     WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "                              ", 31, NULL); // makes green loglabel invisible
     WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "                                       ", 40, NULL);
     //WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "LiveSplit is not connected! ", 29, NULL);
@@ -31,19 +38,25 @@ void start_loglabel(HANDLE processHandle, uintptr_t panoramaBaseAddress, LPCVOID
     while (true) {
         try {
             timer.sendCommand("switchto gametime");
-            //std::cout << "LiveSplit connected!\n";
-            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "                              ", 31, NULL);
+            //console_log("send err. Connection restored");
             WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "                                       ", 40, NULL);
-            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "LiveSplit connected! ", 31, NULL);
+            WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "LiveSplit connected! ", 30, NULL);
         }
         catch (std::runtime_error& ex) {
-            //std::cout << "LiveSplit is not connected!\n";
-            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "                                       ", 40, NULL);
+            //console_log("priv");
+            //console_log("LiveSplit is not connected!");
             WriteProcessMemory(processHandle, (LPVOID)loglabelGreenAddress, "                             ", 30, NULL);
-            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "LiveSplit is not connected! ", 29, NULL);
+            WriteProcessMemory(processHandle, (LPVOID)loglabelRedAddress, "LiveSplit is not connected! ", 40, NULL);
             //std::cout << ex.what() << std::endl;
             timer = ServerSplitter::createTimer();
         }
         Sleep(2000);
     }
+}
+
+// string arg must be 30 symbols or lower!
+void console_log(std::string str) { // FUCK THIS SHIT
+    std::string temp(45 - str.size()*1.5, ' ');
+    temp = temp + "...console-log: " + str + "...";
+    WriteProcessMemory(processHandleBuffer, (LPVOID)consolelogAddress, temp.c_str(), 59, NULL);
 }

@@ -50,5 +50,8 @@
     <ClInclude Include="offsets.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="handles.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

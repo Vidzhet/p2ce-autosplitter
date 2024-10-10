@@ -6,13 +6,12 @@ void monitorStatus(const HANDLE &processHandle, const LPCVOID &targetAddress, co
     bool timerOn = true;
     for (int value = 0, map = 0; true; ReadProcessMemory(processHandle, targetAddress, &value, sizeof(value), nullptr), ReadProcessMemory(processHandle, mapAddress, &map, sizeof(map), nullptr)) {
         //std::cout << "Status value:\t" << value << std::endl;
-        //std::cout << "Status value:\t" << *timerOnPtr << std::endl;
         if (value == 0 && timerOn) {
-            timer.pause();
+            timer.pauseGametime();
             timerOn = false;
         }
         else if (value == 1 && !timerOn) {
-            timer.resume();
+            timer.resumeGametime();
             timerOn = true;
         }
         if (map == MAP_WAKEUP_TRIGGER) {
@@ -103,11 +102,9 @@ void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LP
 }
 #else
 // rewrite of monitorMap, now it uses exactly map bsp names instead of map ids
-void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, const LPCVOID& statusAddress, ServerSplitter::Timer& timer) {
+void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer) {
     //std::cout << "bspThread started.\n";
     bool nextmap = false;
-    bool split = false;
-    int status = 0;
     int end = 0;
     char* buffer = nullptr;
     std::string bsp;
@@ -121,19 +118,13 @@ void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LP
         }
         // if current map not in mapsbuffer
         if (std::find(mapsbuffer.begin(), mapsbuffer.end(), value) == mapsbuffer.end() && !nextmap) {
-            split = true;
+            //std::cout << "split!\n";
+            timer.split();
+            timer.setgametime(timer.gettime()); // sets segment time to gametime
             nextmap = true;
         }
         else if (value == buffer && nextmap) {
             nextmap = false;
-        }
-        ReadProcessMemory(processHandle, statusAddress, &status, sizeof(status), nullptr);
-        if (split && status == 1) {
-            //std::cout << "split!\n";
-            timer.resume();
-            timer.split();
-            timer.setgametime(timer.gettime()); // sets segment time to gametime
-            split = false;
         }
         ReadProcessMemory(processHandle, endAddress, &end, sizeof(end), nullptr);
         //std::cout << end << std::endl;
@@ -164,7 +155,7 @@ void monitorReset(const HANDLE& processHandle, const LPCVOID& statusAddress, con
                     timer.setgametime("0.00");
                     restarted = false;
                     std::thread statusThread(monitorStatus, processHandle, (LPCVOID)statusAddress, (LPCVOID)mapAddress, std::ref(timer));
-                    std::thread bspThread(monitorBsp, processHandle, (LPCVOID)bspAddress, (LPCVOID)endAddress, (LPCVOID)statusAddress, std::ref(timer)); // using bsp monitoring method instead of id monitoring
+                    std::thread bspThread(monitorBsp, processHandle, (LPCVOID)bspAddress, (LPCVOID)endAddress, std::ref(timer)); // using bsp monitoring method instead of id monitoring
                     //std::thread mapThread(monitorMap, processHandle, (LPCVOID)mapAddress, std::ref(timer));
                     statusThread.detach();
                     bspThread.detach();

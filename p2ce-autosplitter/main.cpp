@@ -6,6 +6,12 @@
 #include "offsets.h"
 #include "panorama.h"
 
+uintptr_t engineBaseAddress = NULL;
+uintptr_t materialsystemBaseAddress = NULL;
+uintptr_t clientBaseAddress = NULL;
+uintptr_t panoramaBaseAddress = NULL;
+uintptr_t gameoverlayrenderer64BaseAddress = NULL;
+
 int main() {
     setlocale(LC_ALL, "ru");
 
@@ -26,32 +32,32 @@ int main() {
 
     
     std::cout << "Initializing base address...";
-    auto moduleBaseAddress = GetModuleBaseAddress(processID, L"materialsystem.dll");
-    while (moduleBaseAddress == 0) {
-        moduleBaseAddress = GetModuleBaseAddress(processID, L"materialsystem.dll");
+    materialsystemBaseAddress = GetModuleBaseAddress(processID, L"materialsystem.dll");
+    while (materialsystemBaseAddress == 0) {
+        materialsystemBaseAddress = GetModuleBaseAddress(processID, L"materialsystem.dll");
     }
-    auto engineBaseAddress = GetModuleBaseAddress(processID, L"engine.dll");
+    engineBaseAddress = GetModuleBaseAddress(processID, L"engine.dll");
     while (engineBaseAddress == 0) {
         engineBaseAddress = GetModuleBaseAddress(processID, L"engine.dll");
     }
-    auto clientBaseAddress = GetModuleBaseAddress(processID, L"client.dll");
+    clientBaseAddress = GetModuleBaseAddress(processID, L"client.dll");
     while (clientBaseAddress == 0) {
         clientBaseAddress = GetModuleBaseAddress(processID, L"client.dll");
     }
-    auto panoramaBaseAddress = GetModuleBaseAddress(processID, L"panorama.dll");
+    panoramaBaseAddress = GetModuleBaseAddress(processID, L"panorama.dll");
     while (panoramaBaseAddress == 0) {
         panoramaBaseAddress = GetModuleBaseAddress(processID, L"panorama.dll");
     }
-    auto gameoverlayrenderer64BaseAddress = GetModuleBaseAddress(processID, L"gameoverlayrenderer64.dll");
+    gameoverlayrenderer64BaseAddress = GetModuleBaseAddress(processID, L"gameoverlayrenderer64.dll");
     while (gameoverlayrenderer64BaseAddress == 0) {
         gameoverlayrenderer64BaseAddress = GetModuleBaseAddress(processID, L"gameoverlayrenderer64.dll");
     }
     std::cout << "\tDone!\n";
 
     std::cout << "Offset address...";
-    auto statusAddress = ResolvePointerChain(processHandle, moduleBaseAddress + 0x002DD420, statusOffsets);
+    auto statusAddress = ResolvePointerChain(processHandle, materialsystemBaseAddress + 0x002DD420, statusOffsets);
     while (statusAddress == 0) {
-        statusAddress = ResolvePointerChain(processHandle, moduleBaseAddress + 0x002DD420, statusOffsets);
+        statusAddress = ResolvePointerChain(processHandle, materialsystemBaseAddress + 0x002DD420, statusOffsets);
     }
     uintptr_t mapAddress = engineBaseAddress + 0x01BEF900;
     ReadProcessMemory(processHandle, (LPCVOID)mapAddress, &mapAddress, sizeof(mapAddress), nullptr);

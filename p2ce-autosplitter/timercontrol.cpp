@@ -1,4 +1,5 @@
 #include "timercontrol.h"
+#include "panorama.h"
 
 ServerSplitter::Timer::Timer(bool noinit)
 {
@@ -62,7 +63,7 @@ void ServerSplitter::Timer::sendCommand(const std::string& command) {
 
     int sendResult = send(ConnectSocket, fullCommand.c_str(), (int)fullCommand.length(), 0);
     while (sendResult == SOCKET_ERROR) {
-        std::cout << "Failed to send message.\n"; // debug instead of throwing exeption
+        //console_log("send err. Connection restored"); // debug instead of throwing exeption
         sendResult = send(ConnectSocket, fullCommand.c_str(), (int)fullCommand.length(), 0); // attept to fix problem below
         //throw std::runtime_error("Failed to send message.\tWSAGetLastError: " + std::to_string(WSAGetLastError())); // throws error sometimes
         Sleep(100);

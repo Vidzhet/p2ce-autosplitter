@@ -13,6 +13,6 @@ void monitorMap(const HANDLE& processHandle, const LPCVOID& targetAddress, Serve
 #ifdef oldsplitting
 void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer);
 #else
-void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, const LPCVOID& statusAddress, ServerSplitter::Timer& timer);
+void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer);
 #endif
 void monitorReset(const HANDLE& processHandle, const LPCVOID& statusAddress, const LPCVOID& mapAddress, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer);

@@ -137,6 +137,7 @@
     <ClCompile Include="readmem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="handles.h" />
     <ClInclude Include="misc.h" />
     <ClInclude Include="offsets.h" />
     <ClInclude Include="panorama.h" />

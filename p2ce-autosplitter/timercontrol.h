@@ -4,6 +4,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 #include "includes.h"
+//#include "panorama.h"
 #define CATCH_CONSOLE_DEBUG true
 #define TIMER_NOINIT true
 
