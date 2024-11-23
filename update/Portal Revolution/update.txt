@@ -1,0 +1,2 @@
+https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/panorama/main-menu.js \revolution\panorama
+https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/panorama/link-intact.svg \revolution\panorama
