@@ -4,4 +4,7 @@ p2ce-autosplitter is external LiveSplit autosplitter for strata source portal mo
 ***Currently supports:***
 - Portal Revolution
 
+## Features:
+- **gfdgfd**
+
 **(WIP)!**
