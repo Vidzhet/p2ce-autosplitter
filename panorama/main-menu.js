@@ -297,7 +297,7 @@ class MainMenu {
 	}
 	
 	static onSTARTSPEEDRUN() {
-		GameInterfaceAPI.ConsoleCommand("map wakeup_trigger");
+		GameInterfaceAPI.ConsoleCommand("reset");
 	}
 	static onRESTARTLEVEL() {
 		GameInterfaceAPI.ConsoleCommand("restart_level");

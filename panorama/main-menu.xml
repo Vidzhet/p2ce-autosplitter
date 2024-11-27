@@ -142,7 +142,7 @@
 				
 				<Panel class="dialog__footer">
 					<Label text="by: vidzhet" style="font-style: normal"/>
-					<Label text="p2ce-autosplitter v0.1"/>
+					<Label text="p2ce-autosplitter v0.2"/>
 				</Panel>
 
 			</Panel>
@@ -156,7 +156,7 @@
             </Panel>
 			
 			<Panel class="console-log">
-                <Label text="                                          console-log: ..."/>
+                <Label text=""/>
             </Panel>
 			
 			<Button class="restartlevelbtn pauseonly"
