@@ -6,7 +6,7 @@
 
 ## **Starting a Speedrun:**
 **You can use *Start Speedrun* button in main menu or *Restart Speedrun* in pause menu. You can also just type "reset" command in console**
-Note that it requires "wakeup_save.sav" save to work properly. You can find it on speedrun.com game resources page.
+**> Note that it requires "wakeup_save.sav" save to work properly. You can find it on speedrun.com game resources page.**
 
 ## Features:
 - ### **Auto-Recording demos to separate run folder**
