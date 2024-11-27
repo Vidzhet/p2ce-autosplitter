@@ -13,7 +13,7 @@
 - ### **Brand new DemoControl ui replacement for obsolete demoui!**
 ![img](images/democontrol_preview.png)
 
-- **DemoControl also includes list feature! You can open a folder which contents demos and iterating on them without worry!**
+**DemoControl also includes list feature! You can open a folder which contents demos and iterating on them without worry!**
 
 ![img](images/democontrol_list_preview.png)
 
