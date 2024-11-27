@@ -22,8 +22,9 @@
 **To toggle open the ui, you can press *RightShift* or use default *Shift+F2***
 **To open a folder - go to *List* menu and click *Open*. Then you can iterate on loaded demos by double clicking on them or by using *Select***
 ### **Game ui changes:**
+|-|
+| ![img](images/mainmenu_ui_preview.png) | ![img](images/mainmenu_ui_preview2.png) |
 |-|-|
-![img](images/mainmenu_ui_preview.png) | ![img](images/mainmenu_ui_preview2.png)
 
 ## Setting up LiveSplit:
 **Open your LiveSplit and right click on it, Control -> Start TCP Server**
