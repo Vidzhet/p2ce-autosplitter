@@ -24,7 +24,6 @@
 **Game ui changes:**
 |-|
 | ![img](images/mainmenu_ui_preview.png) | ![img](images/mainmenu_ui_preview2.png) |
-|-|-|
 
 ## Setting up LiveSplit:
 **Open your LiveSplit and right click on it, Control -> Start TCP Server**
