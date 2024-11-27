@@ -30,6 +30,7 @@
 **Open your LiveSplit and right click on it, Control -> Start TCP Server**
 |-|
 | ![img](images/livesplit_setup.png) |
+**Make sure to set port to "16834" in LiveSplit settings. This value is used by the default.**
 
 **Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does (Reconnect without restarting the game is supported)**
 ## Installation:
