@@ -4,7 +4,7 @@
 ## **Currently supports:**
 - **Portal Revolution**
 
-[> Installation](#Installation)
+## [> Installation](#Installation)
 |-|
 
 ## **Starting a Speedrun:**
