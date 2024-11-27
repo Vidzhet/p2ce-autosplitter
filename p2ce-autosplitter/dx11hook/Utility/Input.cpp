@@ -69,64 +69,56 @@ void Input::MenuKeyMonitor()
 
 	while (true)
 	{
-        if (Settings::GetInstance()->Menu)
-        {
-            POINT mousePosition;
-            GetCursorPos(&mousePosition);
-            ScreenToClient(gameWindow, &mousePosition);
+        POINT mousePosition;
+        GetCursorPos(&mousePosition);
+        ScreenToClient(gameWindow, &mousePosition);
 
-            ImGuiIO& io = ImGui::GetIO();
-            io.MousePos.x = (float)mousePosition.x;
-            io.MousePos.y = (float)mousePosition.y;
+        ImGuiIO& io = ImGui::GetIO();
+        io.MousePos.x = (float)mousePosition.x;
+        io.MousePos.y = (float)mousePosition.y;
 
-            if (GetAsyncKeyState(VK_LBUTTON)) {
-                io.MouseDown[0] = true;
+        if (GetAsyncKeyState(VK_LBUTTON)) {
+            io.MouseDown[0] = true;
+        }
+        else {
+            io.MouseDown[0] = false;
+        }
+
+        static double lastInputTime = 0;
+        static const double inputDelay = 0.2f; // seconds
+        static std::set<int> cooldown_keys;
+        static bool cooldown = false;
+
+        double currentTime = ImGui::GetTime();
+
+        // text input
+        for (int key = 0x08; key <= 0xFF; key++) {  // check keys from backspace
+            if (GetAsyncKeyState(key) & 0x8000) {
+                io.KeysDown[key] = true;
+
+                if (currentTime - lastInputTime >= inputDelay) {
+                    cooldown = false;
+                    cooldown_keys.clear();
+                }
+                else { cooldown = true; }
+
+                if (!cooldown || cooldown_keys.find(key) == cooldown_keys.end()) {
+                    if ((key >= 'A' && key <= 'Z') || (key >= '0' && key <= '9') || key == VK_SPACE) {
+                        io.AddInputCharacter((unsigned int)key);
+                        cooldown_keys.insert(key);
+                        lastInputTime = currentTime; // update time
+                    }
+                    else if (key == VK_OEM_PERIOD) {
+                        io.AddInputCharacter('.');
+                        cooldown_keys.insert(key);
+                        lastInputTime = currentTime;
+                    }
+                }
             }
             else {
-                io.MouseDown[0] = false;
-            }
-
-            static double lastInputTime = 0;
-            static const double inputDelay = 0.2f; // seconds
-            static std::set<int> cooldown_keys;
-            static bool cooldown = false;
-
-            double currentTime = ImGui::GetTime();
-
-            // text input
-            for (int key = 0x08; key <= 0xFF; key++) {  // check keys from backspace
-                if (GetAsyncKeyState(key) & 0x8000) {
-                    io.KeysDown[key] = true;
-
-                    if (currentTime - lastInputTime >= inputDelay) { 
-                        cooldown = false;
-                        cooldown_keys.clear();
-                    }
-                    else { cooldown = true; }
-
-                    if (!cooldown || cooldown_keys.find(key) == cooldown_keys.end()) {
-                        if ((key >= 'A' && key <= 'Z') || (key >= '0' && key <= '9') || key == VK_SPACE) {
-                            io.AddInputCharacter((unsigned int)key);
-                            cooldown_keys.insert(key);
-                            lastInputTime = currentTime; // update time
-                        }
-                        else if (key == VK_OEM_PERIOD) {
-                            io.AddInputCharacter('.');
-                            cooldown_keys.insert(key);
-                            lastInputTime = currentTime;
-                        }
-                    }
-                }
-                else {
-                    io.KeysDown[key] = false;
-                }
+                io.KeysDown[key] = false;
             }
         }
-		else
-		{
-			std::this_thread::sleep_for(
-				std::chrono::milliseconds(250));
-		}
 	}
 }
 

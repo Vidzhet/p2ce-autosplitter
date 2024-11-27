@@ -15,7 +15,7 @@
 
 #include "Utility/Renderer.h"
 #include "Utility/Input.h"
-#include "Utility/Settings.h"
+//#include "Utility/Settings.h"
 #include "Utility/XorStr.h"
 
 #include "DirectX11Hook.h"
