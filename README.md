@@ -25,9 +25,8 @@
 | ![img](images/mainmenu_ui_preview.png) | ![img](images/mainmenu_ui_preview2.png) |
 |-|-|
 ## Setting up the LiveSplit:
-**Open your LiveSplit and right click on it, Control -> Start TCP Server**
+**Open your LiveSplit and right click on it, Control -> Start TCP Server** | ![img](images/livesplit_setup.png) |
 |-|
-| ![img](images/livesplit_setup.png) |
 
 **Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does (Reconnect without restarting the game is supported)**
 ## Installation:
