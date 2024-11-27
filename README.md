@@ -16,7 +16,7 @@
 
 **DemoControl also includes list feature! You can open a folder which contents demos and iterating on them without worry!**
 
-**"List" supports auto-switching to next demo once its done playing aswell**
+***"List" supports auto-switching to next demo once its done playing aswell***
 ### Usage:
 - **To toggle open the ui, you can press *RightShift* or use default *Shift+F2***
 - **To open a folder - go to *List* menu and click *Open*. Then you can iterate on loaded demos by double clicking on them or by using *Select***
