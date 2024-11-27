@@ -11,6 +11,12 @@
 ## Features:
 - ### **Auto-Recording demos to separate run folder**
 - ### **Auto-Splitting using local tcp server**
+- ### **4 New console commands:**
+**reset** - start/restart speedrun
+|-|
+**alloc_console** - enable debug information
+**stop_speedrun** - terminate current run
+**democontrol** - toggle new demoui
 - ### **Brand new DemoControl ui replacement for obsolete demoui!**
 | ![img](images/democontrol_preview.png) |
 |-|
@@ -20,7 +26,7 @@
 **"List" supports auto-switching to next demo once its done playing aswell**
 
 ### Usage:
-**To toggle open the ui, you can press *RightShift* or use default *Shift+F2***
+**To toggle open the ui, you can press *RightShift* or use default *Shift+F2*.**
 **To open a folder - go to *List* menu and click *Open*. Then you can iterate on loaded demos by double clicking on them or by using *Select***
 - ### **Game ui changes:**
 | ![img](images/mainmenu_ui_preview.png) | ![img](images/mainmenu_ui_preview2.png) |
@@ -30,8 +36,9 @@
 **Open your LiveSplit and right click on it, Control -> Start TCP Server**
 |-|
 | ![img](images/livesplit_setup.png) |
+**Make sure to set port to "16834" in LiveSplit settings. This value is used by the default.**
 
-**Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does (Reconnect without restarting the game is supported)**
+**Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does. Reconnect without restarting the game is supported.**
 ## Installation:
 **Download and run Installer.exe from [Releases](https://github.com/Vidzhet/p2ce-autosplitter/releases/tag/release). Or download auto-launcher.dll with game executable(Manual installation.zip) and manually dragndrop it to your \bin\win64 with replacement**
 
