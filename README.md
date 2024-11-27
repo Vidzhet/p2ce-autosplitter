@@ -1,4 +1,4 @@
-# p2ce-autosplitter **[Installation](#Installation)**
+# p2ce-autosplitter **[> Installation](#Installation)**
 ### p2ce-autosplitter is internal cheat-like program for strata source portal mods.
 
 ## **Currently supports:**
