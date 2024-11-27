@@ -192,6 +192,7 @@ std::string demo_getname(const std::wstring& demopath) // lol i just bring this 
 int main() {
     std::cout << "Welcome to p2ce-autosplitter installer!\n";
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    MessageBoxA(nullptr, "Please select your game directory", "Select game directory", MB_OK);
     std::wstring initialdir = openfolder();
 
     if (process_update("https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/update/" + demo_getname(initialdir) + "/update.txt", initialdir)) {
