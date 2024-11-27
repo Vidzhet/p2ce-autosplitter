@@ -34,3 +34,5 @@
 **Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does (Reconnect without restarting the game is supported)**
 ## Installation:
 **Download and run Installer.exe from [Releases](https://github.com/Vidzhet/p2ce-autosplitter/releases/tag/release). Or download auto-launcher.dll with game executable(Manual installation.zip) and manually dragndrop it to your \bin\win64 with replacement**
+
+### Contact me: @vidzhet (discord)
