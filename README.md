@@ -5,7 +5,6 @@
 - **Portal Revolution**
 
 # [> Installation](##Installation)
-|-|
 
 ## **Starting a Speedrun:**
 **You can use *Start Speedrun* button in main menu or *Restart Speedrun* in pause menu. You can also just type "reset" command in console**
