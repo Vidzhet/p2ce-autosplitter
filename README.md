@@ -12,7 +12,7 @@
 - ### **Auto-Recording demos to separate run folder**
 - ### **Auto-Splitting using local tcp server**
 - ### **4 New console commands:**
-**reset** - start/restart speedrun            |
+**reset** - start/restart speedrun
 |-|
 **alloc_console** - enable debug information
 **stop_speedrun** - terminate current run
