@@ -27,6 +27,7 @@
 ## Setting up the LiveSplit:
 **Open your LiveSplit and right click on it, Control -> Start TCP Server**
 ![img](images/livesplit_setup.png)
+
 **Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does (Reconnect without restarting the game is supported)**
 ## Installation:
 **Download and run Installer.exe from Releases(todo: add clickable link under the Releases button). Or download auto-launcher.dll and dragndrop it to your \bin\win64**
