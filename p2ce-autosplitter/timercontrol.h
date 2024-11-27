@@ -16,12 +16,10 @@ namespace ServerSplitter {
         SOCKET ConnectSocket = INVALID_SOCKET;
         struct sockaddr_in clientService;
         int result;
-        std::string tryGetResponse(std::string command);
     public:
         Timer(bool noinit = false);
         ~Timer();
-        void sendCommand(std::string command);
-        std::string getResponse(std::string command);
+        void sendCommand(const std::string& command);
         void start();
         void stop();
         void pause();
@@ -34,10 +32,7 @@ namespace ServerSplitter {
         void resumeGametime();
         void setcomparison(std::string comparison);
         void setgametime(const std::string& time);
-        bool timerPaused();
-        std::string getGametime();
         std::string gettime();
-        int getSplitIndex();
         std::string ping();
     };
 

@@ -1,13 +1,7 @@
 #pragma once
 #include "includes.h"
 
-DWORD GetProcessID(const std::string& processName);
-uintptr_t GetModuleBaseAddress(DWORD processID, const std::string& moduleName);
+DWORD GetProcessID(const std::wstring& processName);
+uintptr_t GetModuleBaseAddress(DWORD processID, const std::wstring& moduleName);
 uintptr_t ResolvePointerChain(HANDLE processHandle, uintptr_t baseAddress, const std::vector<uintptr_t>& offsets);
-uintptr_t ptrOffset(uintptr_t baseAddress, const std::vector<uintptr_t>& offsets);
-std::wstring getGamePath();
-std::wstring getCurrentTimeW();
-// converts float to %.1 format str
-std::string float_tostr(float value);
-bool compareFileNames(const std::string& a, const std::string& b);
-
+void getDemoPath();
