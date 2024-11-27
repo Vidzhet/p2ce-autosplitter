@@ -1,13 +1,15 @@
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 #include <iostream>
-#include <Windows.h>
+#include <windows.h>
 #include <TlHelp32.h>
 #include <string>
 #include <vector>
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include <functional>
+#include <map>
 #include <set>
 #include <algorithm>
 #include <cstring>
@@ -15,3 +17,10 @@
 #include <iomanip>
 #include <sstream>
 #include <memory>
+#include <commdlg.h>
+#include <shlobj.h>
+#include <cctype>
+#include "ref\Engine.h"
+#include "ref\Interface.h"
+
+//#define DEBUG

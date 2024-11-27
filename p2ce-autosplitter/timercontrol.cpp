@@ -43,13 +43,12 @@ ServerSplitter::Timer::~Timer()
     closesocket(ConnectSocket);
     WSACleanup();
 }
-void ServerSplitter::Timer::sendCommand(const std::string& command) {
-    std::string fullCommand = command + "\r\n";
+void ServerSplitter::Timer::sendCommand(std::string command) {
+    command += "\r\n";
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         throw std::runtime_error("WSAStartup failed");
     }
-
     this->ConnectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (ConnectSocket == INVALID_SOCKET) {
         WSACleanup();
@@ -61,110 +60,172 @@ void ServerSplitter::Timer::sendCommand(const std::string& command) {
         throw std::runtime_error("Failed to connect to the server.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
     }
 
-    int sendResult = send(ConnectSocket, fullCommand.c_str(), (int)fullCommand.length(), 0);
+    int sendResult = send(ConnectSocket, command.c_str(), (int)command.length(), 0);
     while (sendResult == SOCKET_ERROR) {
         //console_log("send err. Connection restored"); // debug instead of throwing exeption
-        sendResult = send(ConnectSocket, fullCommand.c_str(), (int)fullCommand.length(), 0); // attept to fix problem below
+        sendResult = send(ConnectSocket, command.c_str(), (int)command.length(), 0); // attept to fix problem below
         //throw std::runtime_error("Failed to send message.\tWSAGetLastError: " + std::to_string(WSAGetLastError())); // throws error sometimes
-        Sleep(100);
+        Sleep(10);
+    }
+}
+std::string ServerSplitter::Timer::tryGetResponse(std::string command)
+{
+    command += "\r\n";
+
+    bool dirty = false;
+    while (send(ConnectSocket, command.c_str(), static_cast<int>(command.length()), 0) == SOCKET_ERROR) {
+        if (dirty) {
+            std::thread MessageBoxThread(MessageBoxA, nullptr, "SOCKET ERROR ON send()!", "dirty", MB_OK);
+            MessageBoxThread.detach();
+            dirty = false;
+        }
+        std::cout << "SOCKET ERROR ON send()!\n";
+        /*closesocket(ConnectSocket);
+        WSACleanup();
+        throw std::runtime_error("Failed to send gettime command.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));*/
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+            throw std::runtime_error("WSAStartup failed");
+        }
+    }
+
+    fd_set readSet;
+    FD_ZERO(&readSet);
+    FD_SET(ConnectSocket, &readSet);
+
+    timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 10000; // 10 milliseconds
+
+    int selectResult = select(0, &readSet, NULL, NULL, &timeout);
+    if (selectResult == SOCKET_ERROR) {
+        closesocket(ConnectSocket);
+        WSACleanup();
+        throw std::runtime_error("select failed.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    }
+    else if (selectResult == 0) {
+        throw std::runtime_error("Timeout waiting for server response.");
+    }
+
+    // set socket to not blocking mode
+    u_long mode = 1;
+    if (ioctlsocket(ConnectSocket, FIONBIO, &mode) == SOCKET_ERROR) {
+        closesocket(ConnectSocket);
+        WSACleanup();
+        throw std::runtime_error("Failed to set non-blocking mode.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    }
+
+    char buffer[128];
+    int recvResult = recv(ConnectSocket, buffer, sizeof(buffer) - 1, 0);
+
+    // restore socket to blocking mode
+    mode = 0;
+    ioctlsocket(ConnectSocket, FIONBIO, &mode);
+
+    if (recvResult > 0) {
+        buffer[recvResult] = '\0';
+        return std::string(buffer);
+    }
+    else if (recvResult == 0) {
+        throw std::runtime_error("Connection closed by server.");
+    }
+    else if (WSAGetLastError() == WSAEWOULDBLOCK) {
+        throw std::runtime_error("Timeout: Data was not received within 0.01 seconds.");
+    }
+    else {
+        throw std::runtime_error("recv failed.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    }
+}
+// this will take over than 10 miliseconds!
+std::string ServerSplitter::Timer::getResponse(std::string command) {
+    while (true) {
+        try {
+            std::string result = this->tryGetResponse(command);
+            return result;
+        }
+        catch (const std::runtime_error& ex) {
+            std::cout << ex.what() << std::endl;
+        }
     }
 }
 void ServerSplitter::Timer::start()
 {
-    Timer::sendCommand("start");
+    this->sendCommand("start");
 }
 void ServerSplitter::Timer::stop()
 {
-    Timer::sendCommand("stop");
+    this->sendCommand("stop");
 }
 void ServerSplitter::Timer::pause()
 {
-    Timer::sendCommand("pause");
+    this->sendCommand("pause");
 }
 void ServerSplitter::Timer::resume()
 {
-    Timer::sendCommand("resume");
+    this->sendCommand("resume");
 }
 void ServerSplitter::Timer::split()
 {
-    Timer::sendCommand("split");
+    this->sendCommand("split");
 }
 void ServerSplitter::Timer::reset()
 {
-    Timer::sendCommand("reset");
+    this->sendCommand("reset");
 }
 //use skip() instead of split() if timer is paused at the skip call
 void ServerSplitter::Timer::skip()
 {
-    Timer::sendCommand("skipsplit");
+    this->sendCommand("skipsplit");
 }
 void ServerSplitter::Timer::unsplit()
 {
-    Timer::sendCommand("unsplit");
+    this->sendCommand("unsplit");
 }
 void ServerSplitter::Timer::pauseGametime()
 {
-    Timer::sendCommand("pausegametime");
+    this->sendCommand("pausegametime");
 }
 void ServerSplitter::Timer::resumeGametime()
 {
-    Timer::sendCommand("unpausegametime");
+    this->sendCommand("unpausegametime");
 }
 void ServerSplitter::Timer::setcomparison(std::string comparison)
 {
     std::string command = "setcomparison " + comparison;
-    Timer::sendCommand(command);
+    this->sendCommand(command);
 }
 void ServerSplitter::Timer::setgametime(const std::string& time) {
     std::string command = "setgametime " + time;
-    sendCommand(command);
+    this->sendCommand(command);
+}
+bool ServerSplitter::Timer::timerPaused() { // fuck this shit
+    //this->sendCommand("switchto gametime");
+    std::cout << "timer paused?\n";
+    auto temp = this->getGametime();
+    std::cout << "\nfirst time: " << temp << std::endl;
+    Sleep(1);
+    std::cout << "\nlast time: " << this->getGametime() << std::endl; // bug on getGametime()!!!!
+    if (temp == this->getGametime()) { return true; }
+    else { return false; }
+}
+std::string ServerSplitter::Timer::getGametime()
+{
+    return this->getResponse("getcurrentgametime");
 }
 std::string ServerSplitter::Timer::gettime()
 {
-    std::string command = "getcurrenttime\r\n";
-
-    if (send(ConnectSocket, command.c_str(), (int)command.length(), 0) == SOCKET_ERROR) {
-        closesocket(ConnectSocket);
-        WSACleanup();
-        throw std::runtime_error("Failed to send gettime command.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
-    }
-
-    char buffer[1024];
-    int recvResult = recv(ConnectSocket, buffer, sizeof(buffer), 0);
-    if (recvResult > 0) {
-        buffer[recvResult] = '\0'; // Ensure the buffer is null-terminated
-        return std::string(buffer);
-    }
-    else if (recvResult == 0) {
-        throw std::runtime_error("Connection closed by server.");
-    }
-    else {
-        throw std::runtime_error("recv failed.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
+    return this->getResponse("getcurrenttime");
+}
+int ServerSplitter::Timer::getSplitIndex()
+{
+    while (true) {
+        try {
+            return std::stoi(this->getResponse("getsplitindex")); // convert std::string to int (really buggy sometimes);
+        }
+        catch (std::exception&) {}
     }
 }
-
-std::string ServerSplitter::Timer::ping()
-{
-    std::string command = "ping\r\n";
-
-    if (send(ConnectSocket, command.c_str(), (int)command.length(), 0) == SOCKET_ERROR) {
-        closesocket(ConnectSocket);
-        WSACleanup();
-        throw std::runtime_error("Failed to ping LiveSplit.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
-    }
-
-    char buffer[1024];
-    int recvResult = recv(ConnectSocket, buffer, sizeof(buffer), 0);
-    if (recvResult > 0) {
-        buffer[recvResult] = '\0'; // Ensure the buffer is null-terminated
-        return std::string(buffer);
-    }
-    else if (recvResult == 0) {
-        throw std::runtime_error("Connection closed by server.");
-    }
-    else {
-        throw std::runtime_error("recv failed.\tWSAGetLastError: " + std::to_string(WSAGetLastError()));
-    }
+std::string ServerSplitter::Timer::ping() { // THIS SHIT CAN SOMETIMES KILL GAME LOL
+    return this->getResponse("ping");
 }
 
 
@@ -245,7 +306,7 @@ ServerSplitter::Timer ServerSplitter::createTimer(bool debug)
         try {
             timer = std::make_shared<Timer>();
         }
-        catch (std::runtime_error& ex) {
+        catch (const std::runtime_error& ex) {
             if (debug) {
                 std::cout << std::endl << ex.what();
             }

@@ -1,28 +1,62 @@
 #include "readmem.h"
+#include "panorama.h"
 
-void monitorStatus(const HANDLE &processHandle, const LPCVOID &targetAddress, const LPCVOID& mapAddress, ServerSplitter::Timer& timer)
+bool speedrun_restarted = false;
+bool speedrun_finished = false;
+
+bool monitorStatusRunning = false;
+void monitorStatus(ServerSplitter::Timer& timer)
 {
-    //std::cout << "statusThread started.\n";
+    monitorStatusRunning = true;
+    std::cout << "statusThread started.\n";
     bool timerOn = true;
-    for (int value = 0, map = 0; true; ReadProcessMemory(processHandle, targetAddress, &value, sizeof(value), nullptr), ReadProcessMemory(processHandle, mapAddress, &map, sizeof(map), nullptr)) {
-        //std::cout << "Status value:\t" << value << std::endl;
-        if (value == 0 && timerOn) {
+    for (int status, statusExtra = 0; true;) {
+        status = *reinterpret_cast<int*>(statusAddress);
+        statusExtra = *reinterpret_cast<int*>(statusExtraAddress);
+        if (speedrun_restarted || speedrun_finished || !livesplit_connected) { break; }
+        //std::cout << "Status value:\t" << status << std::endl;
+        //std::cout << "timerOn? " << timerOn << " status: " << value << " working...\n";
+        if ((status == 0 || statusExtra == 0)  && timerOn) {
             timer.pauseGametime();
             timerOn = false;
+            while (!timer.timerPaused()) { // awful fix yeah
+#ifdef DEBUG
+                std::thread MessageBoxThread(MessageBoxW, nullptr, L"---EXTRA TIMER PAUSE---", L"OMG!!! WHAT HAPPENED??", MB_OK); // dirty
+                MessageBoxThread.detach();
+#endif
+                timer.pauseGametime();
+            }
+            std::cout << "Timer paused.\n";
         }
-        else if (value == 1 && !timerOn) {
+        else if (status == 1 && statusExtra == 1 && !timerOn) {
             timer.resumeGametime();
             timerOn = true;
-        }
-        if (map == MAP_WAKEUP_TRIGGER) {
-            break;
+            while (timer.timerPaused()) {
+#ifdef DEBUG
+                std::thread MessageBoxThread(MessageBoxW, nullptr, L"---EXTRA TIMER RESUME---", L"OMG!!! WHAT HAPPENED??", MB_OK); // dirty
+                MessageBoxThread.detach();
+#endif
+                timer.resumeGametime();
+            }
+            std::cout << "Timer resumed.\n";
+
+            // disable flashbang on sp_a4_finale
+            /*if (map == MAP_FINALE) {
+                MessageBoxA(nullptr, "Flashbang disabled!", "p2ce-autosplitter", MB_OK);
+                engine->ConsoleCommand("sv_cheats 1");
+                engine->ConsoleCommand("ent_remove fin_whitefade");
+                engine->ConsoleCommand("ent_remove credits_teleport");
+                engine->ConsoleCommand("ent_remove credits_camera");
+                engine->ConsoleCommand("sv_cheats 0");
+            }*/
         }
         Sleep(1);
     }
-    //std::cout << "statusThread done working!\n";
+    std::cout << "statusThread done working!\n";
+    monitorStatusRunning = false;
 }
-
-void monitorMap(const HANDLE &processHandle, const LPCVOID &mapAddress, ServerSplitter::Timer& timer)
+#ifdef oldsplitting
+void monitorMap(const HANDLE &processHandle, const LPCVOID &mapAddress, ServerSplitter::Timer& timer) // obsolete
 {
     std::cout << "mapThread started.\n";
     bool nextmap = false;
@@ -57,7 +91,7 @@ void monitorMap(const HANDLE &processHandle, const LPCVOID &mapAddress, ServerSp
     }
     std::cout << "mapThread done working!\n";
 }
-#ifdef oldsplitting
+
 void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer) {
     std::cout << "bspThread started.\n";
     bool nextmap = false;
@@ -101,74 +135,153 @@ void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LP
     std::cout << "bspThread done working!\n";
 }
 #else
+bool monitorBspRunning = false;
 // rewrite of monitorMap, now it uses exactly map bsp names instead of map ids
-void monitorBsp(const HANDLE& processHandle, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer) {
-    //std::cout << "bspThread started.\n";
+void monitorBsp(ServerSplitter::Timer& timer) {
+    monitorBspRunning = true;
+    std::cout << "bspThread started.\n";
+    int splitIndexBuf;
     bool nextmap = false;
-    int end = 0;
-    char* buffer = nullptr;
+    std::string buffer;
     std::string bsp;
     std::vector<std::string> mapsbuffer = { "sp_a1_begin.bsp", "menu_post.bsp" };
-    for (char value[64] = "sp_a1_begin.bsp"; true; ReadProcessMemory(processHandle, bspAddress, &value, sizeof(value) - 1, nullptr)) {
-        value[sizeof(value) - 1] = '\0';
-        bsp = value;
+    while (true) {
+        //value[sizeof(value) - 1] = '\0';
+        bsp = reinterpret_cast<char*>(bspAddress);
         //std::cout << "Map value:\t" << value << std::endl;
-        if (bsp == "wakeup_trigger.bsp") {
-            break;
-        }
+        if (speedrun_restarted || speedrun_finished || !livesplit_connected) { break; }
         // if current map not in mapsbuffer
-        if (std::find(mapsbuffer.begin(), mapsbuffer.end(), value) == mapsbuffer.end() && !nextmap) {
+        if (std::find(mapsbuffer.begin(), mapsbuffer.end(), bsp) == mapsbuffer.end() && !nextmap) {
             //std::cout << "split!\n";
+            splitIndexBuf = timer.getSplitIndex();
             timer.split();
-            timer.setgametime(timer.gettime()); // sets segment time to gametime
+            while (splitIndexBuf == timer.getSplitIndex()) {
+#ifdef DEBUG
+                std::thread MessageBoxThread(MessageBoxW, nullptr, L"---EXTRA SPLIT---", L"OMG!!! WHAT HAPPENED???", MB_OK);
+                MessageBoxThread.detach();
+#endif
+                timer.split();
+            }
             nextmap = true;
         }
-        else if (value == buffer && nextmap) {
+        else if (bsp == buffer && nextmap) {
             nextmap = false;
         }
-        ReadProcessMemory(processHandle, endAddress, &end, sizeof(end), nullptr);
-        //std::cout << end << std::endl;
-        if (bsp == "sp_a4_finale.bsp" && end == 255) {
+        if (bsp == "sp_a4_finale.bsp" && *reinterpret_cast<int*>(endAddress) == 255) {
             timer.split(); // final stop timer
+            engine->ConsoleCommand("play playonce\\level\\sad_party_horn_01.wav");
+            std::string finaltime = "Unknown";
+            if (livesplit_connected) {
+                finaltime = timer.getGametime();
+            }
+            Sleep(2000);
+            if (MessageBoxA(nullptr, std::string("Speedrun finished! Final time is: " + finaltime + "\nDo you want to skip the cutscene?").c_str(), "Speedrun finished!", MB_YESNO) == IDYES) {
+                engine->ConsoleCommand("disconnect");
+            }
+            speedrun_finished = true;
             break;
         }
-        buffer = value;
+        buffer = bsp;
         // add only unique maps to mapsbuffer
         if (std::find(mapsbuffer.begin(), mapsbuffer.end(), bsp) == mapsbuffer.end()) {
-            mapsbuffer.push_back(value);
+            mapsbuffer.push_back(bsp);
         }
-        Sleep(1);
+        Sleep(10);
     }
-    //std::cout << "bspThread done working!\n";
+    std::cout << "bspThread done working!\n";
+    monitorBspRunning = false;
 }
 #endif
-void monitorReset(const HANDLE& processHandle, const LPCVOID& statusAddress, const LPCVOID& mapAddress, const LPCVOID& bspAddress, const LPCVOID& endAddress, ServerSplitter::Timer& timer)
+
+bool recordDemoRunning = false;
+void recordDemo() {
+    recordDemoRunning = true;
+    int i = 1;
+    int status = 0;
+    bool recording = false;
+    std::string bsp;
+    std::wstring currentTime = getCurrentTimeW();
+    //MessageBoxW(nullptr, std::wstring(gamePath + L"\\revolution\\demos\\" + currentTime).c_str(), L"current time:", MB_OK);
+    CreateDirectoryW(std::wstring(gamePath + L"\\" + gameName + L"\\demos").c_str(), nullptr);
+    CreateDirectoryW(std::wstring(gamePath + L"\\" + gameName + L"\\demos\\" + currentTime).c_str(), nullptr);
+    while (true) {
+        //value[sizeof(value) - 1] = '\0';
+        status = *reinterpret_cast<int*>(statusAddress);
+        bsp = reinterpret_cast<char*>(bspAddress);
+        //std::cout << status << std::endl;
+        if (speedrun_restarted || speedrun_finished) { break; }
+        if (status == 0 && *reinterpret_cast<int*>(preloadAddress) == 1 && recording) { // preload = 0 when map loaded, != 0 when game initializes world
+            engine->ConsoleCommand("stop"); // stop recording demo
+            std::cout << "stop\n";
+            recording = false;
+        }
+        else if (status == 0 && *reinterpret_cast<int*>(preloadAddress) != 1 && !recording && std::string(reinterpret_cast<char*>(bspAddress), 5) != "menu_") { // check if map name starts with menu_
+            engine->ConsoleCommand("stop");
+            while (*reinterpret_cast<int*>(statusAddress) != 1) {
+                engine->ConsoleCommand(std::string("record demos\\" + std::string(currentTime.begin(), currentTime.end()) + "\\" + std::to_string(i) + "-" + bsp.substr(0, bsp.size() - 4)).c_str());
+                Sleep(10);
+                std::cout << "trying to record...\n";
+                //std::cout << bsp.c_str() << "\t" << std::string("record demos\\" + std::string(currentTime.begin(), currentTime.end()) + "\\" + std::to_string(i) + "-" + bsp.substr(0, bsp.size() - 4)).c_str() << std::endl;
+            }
+            std::cout << "recording: " << bsp.c_str() << "\t" << i <<std::endl;
+            recording = true;
+            i++;
+        }
+        else if (status == 1 && !recording) {
+            engine->ConsoleCommand("stop");
+            engine->ConsoleCommand(std::string("record demos\\" + std::string(currentTime.begin(), currentTime.end()) + "\\" + std::to_string(i) + "-" + bsp.substr(0, bsp.size() - 4)).c_str());
+            std::cout << "else\n";
+            recording = true;
+            i++;
+        }
+        Sleep(10);
+    }
+    std::cout << "demoThread done working!\n";
+    recordDemoRunning = false;
+}
+
+void monitorReset(ServerSplitter::Timer& timer)
 {
     while (true) {
         try
         {
-            timer.sendCommand("switchto gametime");
             bool restarted = false;
-            for (int status = 0, map = 0; true; ReadProcessMemory(processHandle, statusAddress, &status, sizeof(status), nullptr), ReadProcessMemory(processHandle, mapAddress, &map, sizeof(map), nullptr)) {
-                if (status == 1 && map == MAP_WAKEUP_SAVE && restarted) {
-                    timer.start();
-                    timer.setgametime("0.00");
+            std::string bsp;
+            for (int status = 0; true;) {
+                status = *reinterpret_cast<int*>(statusAddress);
+                bsp = reinterpret_cast<char*>(bspAddress);
+                if (status == 1 && bsp == "sp_a1_begin.bsp" && restarted) {
+                    while (monitorStatusRunning || monitorBspRunning || recordDemoRunning) { Sleep(100); } // wait till threads done working
+                    speedrun_restarted = false;
+                    speedrun_finished = false;
                     restarted = false;
-                    std::thread statusThread(monitorStatus, processHandle, (LPCVOID)statusAddress, (LPCVOID)mapAddress, std::ref(timer));
-                    std::thread bspThread(monitorBsp, processHandle, (LPCVOID)bspAddress, (LPCVOID)endAddress, std::ref(timer)); // using bsp monitoring method instead of id monitoring
-                    //std::thread mapThread(monitorMap, processHandle, (LPCVOID)mapAddress, std::ref(timer));
-                    statusThread.detach();
-                    bspThread.detach();
-                    //mapThread.detach();
+                    std::thread demoThread(recordDemo);
+                    if (livesplit_connected) {
+                        timer.start();
+                        while (timer.timerPaused()) {
+                            timer.start();
+                        }
+                        timer.setgametime("0.00");
+                        std::thread statusThread(monitorStatus, std::ref(timer));
+                        std::thread bspThread(monitorBsp, std::ref(timer)); // using bsp monitoring method instead of id monitoring
+                        statusThread.detach();
+                        bspThread.detach();
+                    }
+                    demoThread.detach();
+                    std::cout << "Speedrun started!\n";
                 }
-                else if (map == MAP_WAKEUP_TRIGGER && !restarted) {
-                    timer.reset();
+                else if (speedrun_restarted && !restarted) {
+                    if (livesplit_connected) {
+                        timer.reset();
+                        timer.sendCommand("switchto gametime");
+                    }
                     restarted = true;
+                    std::cout << "Restarted...\n";
                 }
-                Sleep(1);
+                Sleep(100);
             }
         }
-        catch (const std::runtime_error& ex)
+        catch (const std::runtime_error&)
         {
             Sleep(2000);
             continue;
