@@ -9,15 +9,14 @@
 **Please note that it requires "wakeup_save.sav" save to work properly. You can find it on speedrun.com game resources page.**
 
 ## Features:
-- ### **Auto-Recording demos to separate run folder**
-- ### **Auto-Splitting using local tcp server**
 - ### **4 New console commands:**
 **reset** - start/restart speedrun            
 |-|
 **alloc_console** - enable debug information
 **stop_speedrun** - terminate current run
 **democontrol** - toggle new demoui
-
+- ### **Auto-Recording demos to separate run folder**
+- ### **Auto-Splitting using local tcp server**
 - ### **Brand new DemoControl ui replacement for obsolete demoui!**
 | ![img](images/democontrol_preview.png) |
 |-|
