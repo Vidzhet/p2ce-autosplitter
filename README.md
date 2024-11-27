@@ -22,12 +22,11 @@
 - **To toggle open the ui, you can press *RightShift* or use default *Shift+F2***
 - **To open a folder - go to *List* menu and click *Open*. Then you can iterate on loaded demos by double clicking on them or by using *Select***
 - ### **Game ui changes:**
-![img](images/mainmenu_ui_preview.png)
-![img](images/mainmenu_ui_preview2.png)
+![img](images/mainmenu_ui_preview.png) ![img](images/mainmenu_ui_preview2.png)
 ## Setting up the LiveSplit:
 **Open your LiveSplit and right click on it, Control -> Start TCP Server**
 ![img](images/livesplit_setup.png)
 
 **Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does (Reconnect without restarting the game is supported)**
 ## Installation:
-- **Download and run Installer.exe from Releases(todo: add clickable link under the Releases button). Or download auto-launcher.dll and dragndrop it to your \bin\win64**
+- **Download and run Installer.exe from Releases(todo: add clickable link under the Releases button). Or download auto-launcher.dll and manually dragndrop it to your \bin\win64**
