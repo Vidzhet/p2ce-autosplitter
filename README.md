@@ -5,7 +5,7 @@
 - **Portal Revolution**
 
 ## **How to start a speedrun**
-**You can use *Start Speedrun* button in main menu or *Restart Speedrun* in pause menu. You can also just type "restart" command in console**
+**You can use *Start Speedrun* button in main menu or *Restart Speedrun* in pause menu. You can also just type "reset" command in console**
 
 ## Features:
 - ### **Auto-Recording demos to separate run folder**
