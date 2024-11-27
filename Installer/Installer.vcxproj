@@ -21,36 +21,36 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{22dee106-4409-4bd2-bde1-4141f9292368}</ProjectGuid>
-    <RootNamespace>p2ceautosplitter</RootNamespace>
+    <ProjectGuid>{d363495d-de66-48f3-94a4-6b0e1886cbee}</ProjectGuid>
+    <RootNamespace>Installer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -77,12 +77,11 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>dx11hook;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,14 +93,13 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>dx11hook;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,12 +109,11 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>dx11hook;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,7 +124,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>dx11hook;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -135,76 +131,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="console.cpp" />
-    <ClCompile Include="demoui.cpp" />
-    <ClCompile Include="dx11hook\dx11hook.cpp" />
-    <ClCompile Include="dx11hook\ImGui\imgui.cpp" />
-    <ClCompile Include="dx11hook\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="dx11hook\ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="dx11hook\DirectX11Hook.cpp" />
-    <ClCompile Include="dx11hook\Utility\Input.cpp" />
-    <ClCompile Include="dx11hook\Utility\Renderer.cpp" />
-    <ClCompile Include="dx11hook\Utility\Settings.cpp" />
-    <ClCompile Include="imgui_custom.cpp" />
-    <ClCompile Include="imgui_menu.cpp" />
-    <ClCompile Include="imgui_style.cpp" />
-    <ClCompile Include="keybinds.cpp" />
-    <ClCompile Include="misc.cpp" />
-    <ClCompile Include="panorama.cpp" />
-    <ClCompile Include="ref\Engine.cpp" />
-    <ClCompile Include="ref\Interface.cpp" />
-    <ClCompile Include="ref\Memory.cpp" />
-    <ClCompile Include="timercontrol.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="readmem.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="commands.h" />
-    <ClInclude Include="console.h" />
-    <ClInclude Include="demoui.h" />
-    <ClInclude Include="dx11hook\Detours\include\detours.h" />
-    <ClInclude Include="dx11hook\dx11hook.h" />
-    <ClInclude Include="dx11hook\ImGui\imconfig.h" />
-    <ClInclude Include="dx11hook\ImGui\imgui.h" />
-    <ClInclude Include="dx11hook\ImGui\imgui_impl_dx11.h" />
-    <ClInclude Include="dx11hook\ImGui\imgui_internal.h" />
-    <ClInclude Include="dx11hook\ImGui\stb_rect_pack.h" />
-    <ClInclude Include="dx11hook\ImGui\stb_textedit.h" />
-    <ClInclude Include="dx11hook\ImGui\stb_truetype.h" />
-    <ClInclude Include="dx11hook\DirectX11Hook.h" />
-    <ClInclude Include="dx11hook\Utility\Input.h" />
-    <ClInclude Include="dx11hook\Utility\Renderer.h" />
-    <ClInclude Include="dx11hook\Utility\Settings.h" />
-    <ClInclude Include="dx11hook\Utility\XorStr.h" />
-    <ClInclude Include="externs.h" />
-    <ClInclude Include="imgui_custom.h" />
-    <ClInclude Include="imgui_font.h" />
-    <ClInclude Include="imgui_menu.h" />
-    <ClInclude Include="keybinds.h" />
-    <ClInclude Include="misc.h" />
-    <ClInclude Include="offsets.h" />
-    <ClInclude Include="panorama.h" />
-    <ClInclude Include="ref\Engine.h" />
-    <ClInclude Include="ref\Interface.h" />
-    <ClInclude Include="ref\Memory.h" />
-    <ClInclude Include="timercontrol.h" />
-    <ClInclude Include="includes.h" />
-    <ClInclude Include="readmem.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="dx11hook\Detours\x64\detours.lib" />
-    <Library Include="dx11hook\Detours\x86\detours.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="dx11hook\Detours\x64\detours.pdb" />
-    <None Include="dx11hook\Detours\x86\detours.pdb" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="info.rc" />
+    <ClCompile Include="Installer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

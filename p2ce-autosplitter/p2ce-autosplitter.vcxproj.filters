@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Исходные файлы\Sar Code References">
+      <UniqueIdentifier>{3a4f56ce-e181-4bd4-b013-31b0e046c4e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\DirectX11 Hook">
+      <UniqueIdentifier>{b6531aa2-daaf-41a4-884c-c01697425802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\DirectX11 Hook\ImGui">
+      <UniqueIdentifier>{db96d0a0-84e9-427f-94b1-6642b596b6ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\DirectX11 Hook\lib">
+      <UniqueIdentifier>{bef0e5fd-76a4-481b-9176-c4dfa370153e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\DirectX11 Hook\lib\x64">
+      <UniqueIdentifier>{440fc90f-91f0-425d-ba4a-ea9882766169}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\DirectX11 Hook\lib\x86">
+      <UniqueIdentifier>{34e88dd2-ad71-44cd-8ec8-4827f85578b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -30,28 +48,172 @@
     <ClCompile Include="panorama.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="ref\Engine.cpp">
+      <Filter>Исходные файлы\Sar Code References</Filter>
+    </ClCompile>
+    <ClCompile Include="ref\Interface.cpp">
+      <Filter>Исходные файлы\Sar Code References</Filter>
+    </ClCompile>
+    <ClCompile Include="ref\Memory.cpp">
+      <Filter>Исходные файлы\Sar Code References</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_menu.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="console.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\dx11hook.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\DirectX11Hook.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\Utility\Input.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\Utility\Renderer.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\Utility\Settings.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\ImGui\imgui.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\ImGui\imgui_draw.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="dx11hook\ImGui\imgui_impl_dx11.cpp">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_style.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_custom.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="demoui.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="keybinds.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="readmem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="includes.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="timercontrol.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="panorama.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="misc.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="offsets.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="handles.h">
+    <ClInclude Include="externs.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="misc.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="panorama.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="readmem.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="timercontrol.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="ref\Engine.h">
+      <Filter>Исходные файлы\Sar Code References</Filter>
+    </ClInclude>
+    <ClInclude Include="ref\Interface.h">
+      <Filter>Исходные файлы\Sar Code References</Filter>
+    </ClInclude>
+    <ClInclude Include="ref\Memory.h">
+      <Filter>Исходные файлы\Sar Code References</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_menu.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="console.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="commands.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\dx11hook.h">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\DirectX11Hook.h">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\Utility\Input.h">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\Utility\Renderer.h">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\Utility\Settings.h">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\Utility\XorStr.h">
+      <Filter>Исходные файлы\DirectX11 Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\ImGui\imconfig.h">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\ImGui\imgui.h">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\ImGui\imgui_impl_dx11.h">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\ImGui\imgui_internal.h">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\ImGui\stb_rect_pack.h">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\ImGui\stb_textedit.h">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\ImGui\stb_truetype.h">
+      <Filter>Исходные файлы\DirectX11 Hook\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="dx11hook\Detours\include\detours.h">
+      <Filter>Исходные файлы\DirectX11 Hook\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_custom.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_font.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="demoui.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="keybinds.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="dx11hook\Detours\x86\detours.lib">
+      <Filter>Исходные файлы\DirectX11 Hook\lib\x86</Filter>
+    </Library>
+    <Library Include="dx11hook\Detours\x64\detours.lib">
+      <Filter>Исходные файлы\DirectX11 Hook\lib\x64</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dx11hook\Detours\x86\detours.pdb">
+      <Filter>Исходные файлы\DirectX11 Hook\lib\x86</Filter>
+    </None>
+    <None Include="dx11hook\Detours\x64\detours.pdb">
+      <Filter>Исходные файлы\DirectX11 Hook\lib\x64</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="info.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
