@@ -18,10 +18,16 @@ CCOMMAND_LIST()
         speedrun_restarted = true;
     } REGISTER();
 
-    CCOMMAND("alloc_console") {
+    CCOMMAND("alloc_console") { // idk it just doesnt work for some reason :/
         AllocConsole();
         FILE* NewStdOut = nullptr;
         freopen_s(&NewStdOut, "CONOUT$", "w", stdout);
+        std::cout.clear(); // fix
+        std::cout << std::hex << statusAddress << std::dec << std::endl;
+    }REGISTER();
+
+    CCOMMAND("cout_test") {
+        std::cout << "cout_test\n";
     }REGISTER();
 
     CCOMMAND("stop_speedrun") {
