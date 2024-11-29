@@ -5,7 +5,7 @@
 - **Portal Revolution**
 
 ## **Starting a Speedrun:**
-**You can use *Start Speedrun* button in main menu or *Restart Speedrun* in pause menu. You can also just type "reset" command in console**
+**You can use *Start Speedrun* button in main menu or *Restart Speedrun* in pause menu. You can also just type "reset" command in console.**
 **Please note that it requires "wakeup_save.sav" save to work properly. You can find it on speedrun.com game resources page.**
 
 ## Features:
