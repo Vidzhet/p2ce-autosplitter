@@ -94,6 +94,8 @@ bool process_update(const std::string& url, std::wstring dir) {
         }
     }
 
+    DownloadFile("https://github.com/Vidzhet/p2ce-autosplitter/raw/refs/heads/master/update/auto-launcher.dll", dir + L"\\bin\\win64\\auto-launcher.dll");
+
     std::istringstream stream(fileContent);
     std::string line;
     while (std::getline(stream, line)) {
