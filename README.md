@@ -11,10 +11,11 @@
 ## Features:
 - ### **Auto-Recording demos to separate run folder**
 - ### **Auto-Splitting using local tcp server**
-- ### **4 New console commands:**
+- ### **5 New console commands:**
 **reset** - start/restart speedrun
 |-|
 **alloc_console** - enable debug information
+**cheats_toggle** - toggle sv_cheats 1 0
 **stop_speedrun** - terminate current run
 **democontrol** - toggle new demoui
 - ### **Brand new DemoControl ui replacement for obsolete demoui!**
