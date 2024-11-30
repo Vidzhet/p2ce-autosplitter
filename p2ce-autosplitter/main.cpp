@@ -142,7 +142,7 @@ void mainThread() {
     std::cout << "game loaded main\n";
 
     InitConsole();
-    engine->ConsoleCommand("play playonce\\level\\sad_party_horn_01.wav");
+    //engine->ConsoleCommand("play playonce\\level\\sad_party_horn_01.wav");
 
     // todo: add config for binds n settings stuff
 

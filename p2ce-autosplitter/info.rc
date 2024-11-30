@@ -1,7 +1,7 @@
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2
+ FILEVERSION 0,2,0,2
  FILEFLAGSMASK 0x3fL
  FILEFLAGS 0x0L
  FILEOS 0x4L
@@ -14,7 +14,7 @@ VS_VERSION_INFO VERSIONINFO
          BEGIN
              VALUE "CompanyName", "Netu"
              VALUE "FileDescription", "p2ce-autosplitter"
-             VALUE "FileVersion", "0.2"
+             VALUE "FileVersion", "0.2.0.2"
              VALUE "InternalName", "p2ce-autosplitter"
          END
      END

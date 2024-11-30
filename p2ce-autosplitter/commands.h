@@ -41,6 +41,7 @@ CCOMMAND_LIST()
 
     ALIAS("dis", "disconnect"); // example of usage (not an feature but still useful sometimes)
     ALIAS("legacy_demoui", "demoui"); // alias to avoid demoui command hook
+    ALIAS("cheats_toggle", "incrementvar sv_cheats 0 1 1");
 
     CCOMMAND_HOOK("exit") {
         engine->ConsoleCommand("echo bye-bye!"); // just for fun
