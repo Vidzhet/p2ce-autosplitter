@@ -159,7 +159,10 @@ std::string getFileVersion(const std::wstring& filePath) {
 
     if (VerQueryValueW(versionData, L"\\", (LPVOID*)&fileInfo, &fileInfoSize)) {
         delete[] versionData;
-        return std::string(std::to_string(HIWORD(fileInfo->dwFileVersionMS)) + "." + std::to_string(LOWORD(fileInfo->dwFileVersionMS)));
+        return std::string(std::to_string(HIWORD(fileInfo->dwFileVersionMS)) + "." +
+            std::to_string(LOWORD(fileInfo->dwFileVersionMS)) + "." +
+            std::to_string(HIWORD(fileInfo->dwFileVersionLS)) + "." +
+            std::to_string(LOWORD(fileInfo->dwFileVersionLS)));
     }
     else {
         std::cout << "failed to read version" << std::endl;
@@ -193,6 +196,7 @@ void Update() {
     std::wstring RootPath = DllPath;
     RootPath.erase(RootPath.find(L"\\bin\\win64\\p2ce-autosplitter.dll"), 32);
     // check for updates
+    //MessageBoxA(nullptr, (getFileVersion(DllPath) + github_readversion("https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/update/version.txt")).c_str(), "...", MB_OK);
     if (getFileVersion(DllPath) != github_readversion("https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/update/version.txt")) {
         process_update("https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/update/" + demo_getname(RootPath) + "/update.txt", RootPath);
         CreateThread(nullptr, 0, [](LPVOID) -> DWORD { MessageBoxA(nullptr, "p2ce-autosplitter has been updated.\nYou may need to restart the game", "p2ce-autosplitter updated", MB_OK); return 0; }, nullptr, 0, nullptr);
