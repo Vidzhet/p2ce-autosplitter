@@ -139,8 +139,7 @@ std::string ServerSplitter::Timer::tryGetResponse(std::string command)
 std::string ServerSplitter::Timer::getResponse(std::string command) {
     while (true) {
         try {
-            std::string result = this->tryGetResponse(command);
-            return result;
+            return this->tryGetResponse(command);
         }
         catch (const std::runtime_error& ex) {
             std::cout << ex.what() << std::endl;
@@ -188,14 +187,12 @@ void ServerSplitter::Timer::resumeGametime()
 {
     this->sendCommand("unpausegametime");
 }
-void ServerSplitter::Timer::setcomparison(std::string comparison)
+void ServerSplitter::Timer::setcomparison(const std::string& comparison)
 {
-    std::string command = "setcomparison " + comparison;
-    this->sendCommand(command);
+    this->sendCommand("setcomparison " + comparison);
 }
-void ServerSplitter::Timer::setgametime(const std::string& time) {
-    std::string command = "setgametime " + time;
-    this->sendCommand(command);
+void ServerSplitter::Timer::setgametime(const std::string& time) {;
+    this->sendCommand("setgametime " + time);
 }
 bool ServerSplitter::Timer::timerPaused() { // fuck this shit
     //this->sendCommand("switchto gametime");
@@ -203,7 +200,7 @@ bool ServerSplitter::Timer::timerPaused() { // fuck this shit
     auto temp = this->getGametime();
     std::cout << "\nfirst time: " << temp << std::endl;
     Sleep(1);
-    std::cout << "\nlast time: " << this->getGametime() << std::endl; // bug on getGametime()!!!!
+    std::cout << "\nlast time: " << this->getGametime() << std::endl; // bug on getGametime()!!!! (seems to be fixed)
     if (temp == this->getGametime()) { return true; }
     else { return false; }
 }

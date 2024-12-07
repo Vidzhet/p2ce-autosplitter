@@ -32,7 +32,7 @@ namespace ServerSplitter {
         void unsplit();
         void pauseGametime();
         void resumeGametime();
-        void setcomparison(std::string comparison);
+        void setcomparison(const std::string& comparison);
         void setgametime(const std::string& time);
         bool timerPaused();
         std::string getGametime();
