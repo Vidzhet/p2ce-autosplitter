@@ -22,21 +22,17 @@ private:
 };
 
 #define CCOMMAND_REGISTER(name) \
-    [&]() { \
-        ccommand::ccommand_register(name, [&]() 
+    ccommand::ccommand_register(name, [&]()
 
 #define CCOMMAND_HOOK(name) \
-    [&]() { \
-        ccommand::ccommand_hook(name, [&]() 
+    ccommand::ccommand_hook(name, [&]() 
 
 // checks if registered text exists at the start of the command, for example if registered text = "hello" and entered console command = "hello world", it will work. But! if entered command = "world hello" or "he" it wont work.
 #define CCOMMAND_HOOK_ONLY(name) \
-    [&]() { \
-        ccommand::ccommand_hook_only(name, [&]() 
+    ccommand::ccommand_hook_only(name, [&]() 
 
 #define REGISTER_EXECUTE() \
-        ); \
-    }()
+        );
 
 #define CCOMMAND_ALIAS(name, command) engine->ConsoleCommand("alias " name " " command)
 
