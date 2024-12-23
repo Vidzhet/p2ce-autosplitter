@@ -234,6 +234,16 @@ void recordDemo() {
             recording = true;
             i++;
         }
+        if (!monitorBspRunning && bsp == "sp_a4_finale.bsp" && *reinterpret_cast<int*>(endAddress) == 255) {
+            engine->ConsoleCommand("play playonce\\level\\sad_party_horn_01.wav");
+            std::string finaltime = "Unknown";
+            Sleep(2000);
+            if (MessageBoxA(nullptr, std::string("Speedrun finished! Final time is: " + finaltime + "\nDo you want to skip the cutscene?").c_str(), "Speedrun finished!", MB_YESNO) == IDYES) {
+                engine->ConsoleCommand("disconnect");
+            }
+            speedrun_finished = true;
+            break;
+        }
         Sleep(10);
     }
     std::cout << "demoThread done working!\n";
