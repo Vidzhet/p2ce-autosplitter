@@ -1,6 +1,8 @@
 # p2ce-autosplitter **[> Installation](#Installation)**
 ### p2ce-autosplitter is internal cheat-like program for strata source portal mods.
 
+## Since portal revolution has updated, p2ce-autosplitter is broken. Ill rewrite many things to made it compatible with any p2ce mod. Thank you for visiting this page.
+
 ## **Currently supports:**
 - **Portal Revolution**
 
