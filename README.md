@@ -8,6 +8,11 @@
 **You can use *Start Speedrun* button in main menu or *Restart Speedrun* in pause menu. You can also just type "reset" command in console.**
 **Please note that it requires "wakeup_save.sav" save to work properly. You can find it on speedrun.com game resources page.**
 
+## **Setting up speedrun config:**
+**Create a file named "speedrun_config.mge" in game root directory (aka "Portal Revolution"), then specify map name, entity name and entity input in following header.**
+**It creates a hook on specified entity input to send a signal to autosplitter such as speedrun end. (currently only [End] header is available.)** 
+**See example config file for Portal Revolution [here](https://github.com/Vidzhet/p2ce-autosplitter/blob/master/speedrun_config.mge). (Its already set up for use!)**
+
 ## Features:
 - ### **Auto-Recording demos to separate run folder**
 - ### **Auto-Splitting using local tcp server**
@@ -41,7 +46,7 @@
 
 **Then go back to game and you will see *LiveSplit Connected* in upper right corner if it does. Reconnect without restarting the game is supported.**
 ## Installation:
-**Download and run Installer.exe from [Releases](https://github.com/Vidzhet/p2ce-autosplitter/releases). Or download auto-launcher.dll with game executable(Manual installation.zip) and manually dragndrop it to your \bin\win64 with replacement**
+**Download and run Installer.exe from [Releases](https://github.com/Vidzhet/p2ce-autosplitter/releases). Or use manual installation.**
 
 **IMPORTANT: if you experiencing "updated" popup every game launch, thats meaning the auto-launcher was updated. So because it can not update itself, please reinstall auto-launcher.dll using Installer/manual installation or just click [Here](https://github.com/Vidzhet/p2ce-autosplitter/raw/refs/heads/master/update/auto-launcher.dll).**
 
