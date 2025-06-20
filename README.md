@@ -11,7 +11,7 @@
 ## **Setting up speedrun config:**
 **Create a file named "speedrun_config.mge" in game root directory (aka "Portal Revolution"), then specify map name, entity name and entity input in following header.**
 **It creates a hook on specified entity input to send a signal to autosplitter such as speedrun end. (currently only [End] header is available.)** 
-**See example config file for Portal Revolution [here](https://github.com/Vidzhet/p2ce-autosplitter/releases). (Its already set up for use!)**
+**See example config file for Portal Revolution [here](https://github.com/Vidzhet/p2ce-autosplitter/blob/master/speedrun_config.mge). (Its already set up for use!)**
 
 ## Features:
 - ### **Auto-Recording demos to separate run folder**
