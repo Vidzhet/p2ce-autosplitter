@@ -142,7 +142,7 @@
 				
 				<Panel class="dialog__footer">
 					<Label text="by: vidzhet" style="font-style: normal"/>
-					<Label text="p2ce-autosplitter v0.2"/>
+					<Label text="p2ce-autosplitter v0.3"/>
 				</Panel>
 
 			</Panel>

@@ -4,6 +4,7 @@
 
 const std::vector<std::string> ccommand_ignore = { "demo", "toggleconsole", "gameui_", "disconnect", "play", "echo", "setpause", "connect", "record", "stop", "map", "sound"};
 
+void parseDemo(std::wstring filepath);
 int demo_tick();
 int demo_maxtick();
 std::string demo_time();

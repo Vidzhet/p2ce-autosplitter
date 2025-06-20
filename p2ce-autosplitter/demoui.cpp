@@ -23,7 +23,7 @@ struct DemoHeader {
 };
 #pragma pack(pop)
 
-static inline void parseDemo(std::wstring filepath) {
+void parseDemo(std::wstring filepath) {
     std::ifstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
         return;
