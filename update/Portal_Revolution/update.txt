@@ -1,0 +1,6 @@
+https://github.com/Vidzhet/p2ce-autosplitter/raw/refs/heads/master/update/p2ce-autosplitter.dll \bin\win64
+https://github.com/Vidzhet/p2ce-autosplitter/raw/refs/heads/master/update/iconv.dll \bin\win64
+https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/panorama/main-menu.xml \revolution\panorama\layout\pages\main-menu
+https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/panorama/main-menu.js \revolution\panorama\scripts\pages
+https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/panorama/main-menu.scss \revolution\panorama\styles\pages
+https://raw.githubusercontent.com/Vidzhet/p2ce-autosplitter/refs/heads/master/panorama/link-intact.svg \revolution\panorama\images\icons\svg
