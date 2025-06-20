@@ -142,22 +142,16 @@
     <ClCompile Include="console.cpp" />
     <ClCompile Include="demoui.cpp" />
     <ClCompile Include="dx11hook\dx11hook.cpp" />
+    <ClCompile Include="dx11hook\DirectX11Hook.cpp" />
     <ClCompile Include="dx11hook\ImGui\imgui.cpp" />
     <ClCompile Include="dx11hook\ImGui\imgui_draw.cpp" />
     <ClCompile Include="dx11hook\ImGui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="dx11hook\DirectX11Hook.cpp" />
-    <ClCompile Include="dx11hook\Utility\Input.cpp" />
-    <ClCompile Include="dx11hook\Utility\Renderer.cpp" />
-    <ClCompile Include="dx11hook\Utility\Settings.cpp" />
     <ClCompile Include="imgui_custom.cpp" />
     <ClCompile Include="imgui_menu.cpp" />
     <ClCompile Include="imgui_style.cpp" />
     <ClCompile Include="keybinds.cpp" />
     <ClCompile Include="misc.cpp" />
     <ClCompile Include="panorama.cpp" />
-    <ClCompile Include="ref\Engine.cpp" />
-    <ClCompile Include="ref\Interface.cpp" />
-    <ClCompile Include="ref\Memory.cpp" />
     <ClCompile Include="timercontrol.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="readmem.cpp" />
@@ -166,8 +160,8 @@
     <ClInclude Include="commands.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="demoui.h" />
-    <ClInclude Include="dx11hook\Detours\include\detours.h" />
     <ClInclude Include="dx11hook\dx11hook.h" />
+    <ClInclude Include="dx11hook\DirectX11Hook.h" />
     <ClInclude Include="dx11hook\ImGui\imconfig.h" />
     <ClInclude Include="dx11hook\ImGui\imgui.h" />
     <ClInclude Include="dx11hook\ImGui\imgui_impl_dx11.h" />
@@ -175,33 +169,18 @@
     <ClInclude Include="dx11hook\ImGui\stb_rect_pack.h" />
     <ClInclude Include="dx11hook\ImGui\stb_textedit.h" />
     <ClInclude Include="dx11hook\ImGui\stb_truetype.h" />
-    <ClInclude Include="dx11hook\DirectX11Hook.h" />
-    <ClInclude Include="dx11hook\Utility\Input.h" />
-    <ClInclude Include="dx11hook\Utility\Renderer.h" />
-    <ClInclude Include="dx11hook\Utility\Settings.h" />
-    <ClInclude Include="dx11hook\Utility\XorStr.h" />
+    <ClInclude Include="eiface.h" />
     <ClInclude Include="externs.h" />
     <ClInclude Include="imgui_custom.h" />
     <ClInclude Include="imgui_font.h" />
     <ClInclude Include="imgui_menu.h" />
     <ClInclude Include="keybinds.h" />
     <ClInclude Include="misc.h" />
-    <ClInclude Include="offsets.h" />
     <ClInclude Include="panorama.h" />
-    <ClInclude Include="ref\Engine.h" />
-    <ClInclude Include="ref\Interface.h" />
-    <ClInclude Include="ref\Memory.h" />
     <ClInclude Include="timercontrol.h" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="readmem.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="dx11hook\Detours\x64\detours.lib" />
-    <Library Include="dx11hook\Detours\x86\detours.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="dx11hook\Detours\x64\detours.pdb" />
-    <None Include="dx11hook\Detours\x86\detours.pdb" />
+    <ClInclude Include="vtablehook.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="info.rc" />

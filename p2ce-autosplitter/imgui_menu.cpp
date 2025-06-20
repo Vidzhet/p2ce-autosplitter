@@ -1,14 +1,13 @@
 #include "imgui_menu.h"
 #include "imgui_custom.h"
-#include "ref/Engine.h"
 #include "console.h"
 #include "demoui.h"
 #include "misc.h"
 #include <optional>
+#include "externs.h"
 
 #define def_pos ImVec2(20, (ImGui::GetIO().DisplaySize.y - 200) / 2)
 
-DirectX11Hook tt;
 bool imgui_menu = false;
 bool do_once = true;
 bool apply_def_pos = true;
@@ -33,7 +32,6 @@ bool list_menu = false;
 ImVec2 menu_sizeBuf = ImVec2(300, 200);
 bool demo_paused = false;
 bool slider_tick_active = false;
-bool demo_mode = false;
 std::string last_ccommand("...");
 std::string loaded_demo("Not loaded");
 std::vector<std::string> demo_list;
@@ -46,15 +44,57 @@ bool allign_list_loaded_file = false;
 bool demo_loadnext = false;
 bool demo_loadnext_allow = true;
 
+ImGuiIO* io;
+ImDrawList* imgui_drawlist;
+
 void IMGUI_RENDER()
 {
     if (do_once) {
         ImGui::SetNextWindowSize(ImVec2(300, 200));
         ImGui::SetNextWindowPos(def_pos);
         ImGui::SetNextWindowCollapsed(false);
+        io = &ImGui::GetIO();
+        imgui_drawlist = ImGui::GetOverlayDrawList();
 
         do_once = false;
     }
+
+    // drawing livesplit connected or not in the corner
+    if (engine->IsLevelMainMenuBackground() || engine->IsPaused()) {
+        ImGui::PushFont(bold_fontX16);
+        if (livesplit_connected) {
+            ImVec2 green_text_size = ImGui::CalcTextSize("LiveSplit connected!");
+            imgui_drawlist->AddText(ImVec2(io->DisplaySize.x - green_text_size.x - 10, 30), IM_COL32(92, 255, 122, 255), "LiveSplit connected!");
+        }
+        else {
+            ImVec2 red_text_size = ImGui::CalcTextSize("LiveSplit is not connected!");
+            imgui_drawlist->AddText(ImVec2(io->DisplaySize.x - red_text_size.x - 10, 30), IM_COL32(255, 92, 92, 255), "LiveSplit is not connected!");
+        }
+        ImGui::PopFont();
+    }
+
+    static bool timer_resume_apply = false;
+    if (timer_resume && !timer_resume_apply) {
+        timer_resume_apply = true;
+        std::cout << "frame1\n";
+    }
+    else if (timer_resume_apply) {
+        timer_resume_apply = timer_resume = false;
+        std::cout << "frame2\n";
+    }
+    
+    static bool ent_cvar_protect_apply = false;
+    if (timer_resume && !ent_cvar_protect_apply) {
+        ent_cvar_protect_apply = true;
+        std::cout << "frame1\n";
+    }
+    else if (ent_cvar_protect_apply) {
+        ent_cvar_protect_apply = timer_resume = false;
+        g_pCVar->FindVar("ent_fire")->AddFlags(FCVAR_CHEAT);
+        g_pCVar->FindVar("ent_create")->AddFlags(FCVAR_CHEAT);
+        std::cout << "frame2\n";
+    }
+
 
     if (apply_def_pos) {
         ImGui::SetNextWindowPos(def_pos);
@@ -72,48 +112,42 @@ void IMGUI_RENDER()
         collapse_menu = false;
     }
     else if (!menu_collapsed && collapse_menu) {
-        //std::cout << menu_sizeBuf.x << std::endl << menu_sizeBuf.y << std::endl;
         ImGui::SetNextWindowSize(menu_sizeBuf);
         collapse_menu = false;
     }
 
-    if (autoload_next_demo) {
-        if (!demo_mode && demo_loadnext) { // autoload next demo
-            std::string lastcommand(ccommand::getLastCommand());
-            demo_loadnext_allow = true;
-            for (int i = 0; i < 10; i++) { // DO NOT ASK ME WHAT THE FUCK IS THAT AND WHY AND WHAT
-                lastcommand = ccommand::getLastCommand();
-                //std::cout << lastcommand.c_str() << i<< std::endl;
-                if (lastcommand == "+attack" || lastcommand == "-attack" || lastcommand == "disconnect" || lastcommand == "stopdemo" || lastcommand.substr(0, 4) == "load" || lastcommand.substr(0, 3) == "map" || lastcommand.substr(0, 11) == "changelevel" || lastcommand.substr(0, 4) == "play") {
-                    demo_loadnext_allow = false;
-                    break;
-                }
-                Sleep(1);
+    static bool draw_cursor = true;
+    if (imgui_menu && !draw_cursor && engine->IsPlayingDemo()) {
+        ImGui::GetIO().MouseDrawCursor = true;
+        draw_cursor = true;
+    }
+    else if (draw_cursor && !engine->IsPlayingDemo()) {
+        ImGui::GetIO().MouseDrawCursor = false;
+        draw_cursor = false;
+    }
+
+    static bool autoload_next_demo_allow = false;
+    if (autoload_next_demo) { // autoload next demo
+        if (autoload_next_demo_allow) { // checking IsDrawingLoadingImage() on the next frame
+            if (!engine->IsDrawingLoadingImage() && !demo_list.empty() && demo_list_iterator.has_value() && **demo_list_iterator == loaded_demo && std::next(*demo_list_iterator) != demo_list.end()) {
+                loaded_demo = *++ * demo_list_iterator;
+                engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
+                engine->ClientCmd_Unrestricted("ccommand_executed"); // hardcode fixzz
+                allign_list_loaded_file = true;
+                demo_paused = false;
+                //std::cout << "demo_loadnext\n";
             }
-            if (demo_loadnext_allow) {
-                if (!demo_list.empty() && demo_list_iterator.has_value() && **demo_list_iterator == loaded_demo && std::next(*demo_list_iterator) != demo_list.end()) {
-                    loaded_demo = *++ * demo_list_iterator;
-                    engine->ConsoleCommand(("playdemo " + loaded_demo).c_str());
-                    engine->ConsoleCommand("ccommand_executed"); // hardcode fixzz
-                    allign_list_loaded_file = true;
-                    demo_paused = false;
-                    //std::cout << "demo_loadnext\n";
-                }
-            }
+            autoload_next_demo_allow = false;
+        }
+        if (demo_loadnext && !engine->IsPlayingDemo() && !engine->IsInGame()) {
+            autoload_next_demo_allow = true;
             demo_loadnext = false;
         }
-        else if (demo_mode && !demo_loadnext && *reinterpret_cast<int*>(statusAddress) == 1) { demo_loadnext = true; }
+        else if (engine->IsPlayingDemo() && !demo_loadnext && engine->IsInGame()) { demo_loadnext = true; }
     }
 
     if (imgui_menu) {
         ImGui::Begin("Demo Control", &imgui_menu, ImGuiWindowFlags_NoScrollbar | (free_move ? 0 : ImGuiWindowFlags_NoMove) | (free_resize ? 0 : ImGuiWindowFlags_NoResize));
-
-        if (ImGui::GetIO().MouseDrawCursor == false && demo_mode) { 
-            ImGui::GetIO().MouseDrawCursor = true;
-        }
-        else if (!demo_mode) {
-            ImGui::GetIO().MouseDrawCursor = false;
-        }
 
         if (!menu_collapsed && ImGui::IsWindowCollapsed()) {
             menu_collapsed = true;
@@ -154,17 +188,16 @@ void IMGUI_RENDER()
 
             //ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100 -16);
             if (ImGui::Button("Open", ImVec2(62, 21))) {
-                std::thread th([]() { // executing winapi dialog window code in separate thread to avoid blocking swapchain(basically gamethread)
-                    std::wstring folder_path = openfolder(gamePath + L"\\" + gameName);
+                std::thread([]() { // executing winapi dialog window code in separate thread to avoid blocking swapchain(basically gamethread)
+                    std::wstring folder_path = openfolder(gamePath + L"\\" + gameNameW);
                     try {
-                        demo_list = demo_getlist(folder_path, gamePath + L"\\" + gameName + L"\\");
+                        demo_list = demo_getlist(folder_path, gamePath + L"\\" + gameNameW + L"\\");
                         list_folder = demo_getname(std::string(folder_path.begin(), folder_path.end()));
                     }
                     catch (const std::runtime_error& ex) {
                         std::cout << ex.what() << std::endl;
                     }
-                    });
-                th.detach();
+                    }).detach();
             }
             ImGui::SameLine();
             //ImGui::SetCursorPosX(ImGui::GetWindowWidth()/2 - 28);
@@ -182,7 +215,7 @@ void IMGUI_RENDER()
                         demo_list_iterator = demo_list_selected_iterator;
                     }
                     if (autoplay_loaded_demo) {
-                        engine->ConsoleCommand(("playdemo " + loaded_demo).c_str());
+                        engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                         demo_paused = false;
                     }
                 }
@@ -197,7 +230,6 @@ void IMGUI_RENDER()
             ImGui::Separator();
 
             ImGui::BeginChild("##list", ImVec2(208, 210));
-            //demolist_slideractive = ImGui::GetCurrentWindowRead()->ScrollbarY;
 
             if (!demo_list.empty()) {
                 std::string file;
@@ -217,7 +249,7 @@ void IMGUI_RENDER()
                         demo_list_iterator = it;
                         list_selected_file.clear();
                         if (autoplay_loaded_demo) { 
-                            engine->ConsoleCommand(("playdemo " + loaded_demo).c_str()); 
+                            engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str()); 
                             demo_paused = false;
                         }
                     }
@@ -232,7 +264,7 @@ void IMGUI_RENDER()
                         if (allign_list_loaded_file) {
                             // if loaded file out of visible window
                             if (ImGui::GetCursorPosY() < ImGui::GetScrollY() + ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y) { // if above visible window
-                                ImGui::SetScrollY(ImGui::GetCursorPosY() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().WindowPadding.y/* - 160*/);
+                                ImGui::SetScrollY(ImGui::GetCursorPosY() - ImGui::GetFrameHeightWithSpacing() - ImGui::GetStyle().WindowPadding.y);
                             }
                             else if (ImGui::GetCursorPosY() > ImGui::GetScrollY() + ImGui::GetWindowHeight()) { // if below visible window
                                 ImGui::SetScrollY(ImGui::GetCursorPosY() - ImGui::GetWindowHeight() + ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().WindowPadding.y - 18);
@@ -251,23 +283,21 @@ void IMGUI_RENDER()
             ImGui::PopStyleVar(2);
         }
 
-        demo_mode = *reinterpret_cast<int*>(demo_modeAddress) == 1 ? true : false; // is demo playing (demo view mode)
-        if (demo_mode && ccommand_valid()) {
+        if (engine->IsPlayingDemo() && ccommand_valid()) {
             last_ccommand = ccommand::getLastCommand();
         }
 
         if (ImGui::Button("Load", ImVec2(50, 21))) {
-            std::thread th([]() { // executing winapi dialog window code in separate thread to avoid blocking swapchain(basically gamethread)
-                std::string temp = openfile_dem(gamePath + L"\\" + gameName, gamePath + L"\\" + gameName + L"\\");
+            std::thread([]() { // executing winapi dialog window code in separate thread to avoid blocking swapchain(basically gamethread)
+                std::string temp = openfile_dem(gamePath + L"\\" + gameNameW, gamePath + L"\\" + gameNameW + L"\\");
                 if (temp != "Not loaded") {
                     loaded_demo = temp;
                     if (autoplay_loaded_demo) {
-                        engine->ConsoleCommand(("playdemo " + loaded_demo).c_str());
+                        engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                         demo_paused = false;
                     }
                 }
-                });
-            th.detach();
+                }).detach();
         }
         ImGui::SameLine();
         if (list_menu) {
@@ -279,7 +309,6 @@ void IMGUI_RENDER()
         }
         else {
             if (ImGui::Button("List", ImVec2(50, 21))) {
-                //tt.Release(); // that was kill button
                 list_menu = !list_menu;
             }
         }
@@ -289,7 +318,7 @@ void IMGUI_RENDER()
         }
         ImGui::SameLine(ImGui::GetWindowWidth() - 58);
         if (ImGui::Button("Stop", ImVec2(50, 21))) {
-            engine->ConsoleCommand("stopdemo");
+            engine->ClientCmd_Unrestricted("stopdemo");
         }
         ImGui::SameLine(ImGui::GetWindowWidth() - 83);
         ImGui::PushFont(icon_fontX19);
@@ -297,9 +326,9 @@ void IMGUI_RENDER()
         ImGui::PopFont();
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
-        if (ImGui::Button("Goto:", ImVec2(56, 21))) {
-            engine->ConsoleCommand(std::string("demo_gototick " + std::to_string(input_gototick)).c_str());
-            engine->ConsoleCommand(demo_paused ? "demo_pause" : "demo_resume");
+        if (ImGui::Button("Goto:", ImVec2(56, 21)) && engine->IsPlayingDemo()) {
+            engine->ClientCmd_Unrestricted(std::string("demo_gototick " + std::to_string(input_gototick)).c_str());
+            engine->ClientCmd_Unrestricted(demo_paused ? "demo_pause" : "demo_resume");
         }
         ImGui::SameLine();
         ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() - 12, ImGui::GetCursorPosY() + 1)); // create a square
@@ -309,10 +338,10 @@ void IMGUI_RENDER()
         ImGui::GetWindowDrawList()->AddRectFilled(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y), ImVec2(ImGui::GetCursorScreenPos().x + 4, ImGui::GetCursorScreenPos().y + 21), ImGui::GetColorU32(ImVec4(0.3f, 0.3f, 0.3f, 1.0f)));
         ImGui::SameLine(ImGui::GetCursorPosX() + 12);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 4)); // edit the height
-        static char input_gototick_textBuf;
-        if (ImCustom::InputInt("##input_gototick", &input_gototick, &input_gototick_textBuf, 6, 44, ImGuiInputTextFlags_EnterReturnsTrue)) {
-            engine->ConsoleCommand(std::string("demo_gototick " + std::to_string(input_gototick)).c_str());
-            engine->ConsoleCommand(demo_paused ? "demo_pause" : "demo_resume");
+        static char input_gototick_textBuf[6];
+        if (ImCustom::InputInt("##input_gototick", &input_gototick, input_gototick_textBuf, 6, 44, ImGuiInputTextFlags_EnterReturnsTrue) && engine->IsPlayingDemo()) {
+            engine->ClientCmd_Unrestricted(std::string("demo_gototick " + std::to_string(input_gototick)).c_str());
+            engine->ClientCmd_Unrestricted(demo_paused ? "demo_pause" : "demo_resume");
         }
         ImGui::PopStyleVar();
         /*ImGui::SameLine(ImGui::GetWindowWidth() - (ImGui::CalcTextSize("Speed:").x + 94 + 48));
@@ -330,7 +359,7 @@ void IMGUI_RENDER()
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0)); // make value inside the slider invisible
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.7f, 0.4f, 0, 1));
         if (ImGui::SliderFloat("##slider_speed", &input_speed, 1, 400, "%.1f")) {
-            engine->ConsoleCommand(std::string("demo_timescale " + std::to_string(input_speed / 100)).c_str());
+            engine->ClientCmd_Unrestricted(std::string("demo_timescale " + std::to_string(input_speed / 100)).c_str());
             std::strcpy(input_speed_textBuf, float_tostr(input_speed).c_str());
         }
         ImGui::PopStyleVar();
@@ -342,7 +371,7 @@ void IMGUI_RENDER()
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 4)); // edit the height
         ImCustom::InputFloat("##input_speed", &input_speed, input_speed_textBuf, 6, 40);
         if (ImGui::IsItemActive()) {
-            engine->ConsoleCommand(std::string("demo_timescale " + std::to_string(input_speed / 100)).c_str());
+            engine->ClientCmd_Unrestricted(std::string("demo_timescale " + std::to_string(input_speed / 100)).c_str());
             input_speed_active = true;
         }
         else if (input_speed_active) {
@@ -366,10 +395,10 @@ void IMGUI_RENDER()
         ImGui::SameLine();
         ImGui::Text(std::string("(" + demo_maxtime() + ")").c_str());
         ImCustom::SliderInt("##slider_tick", &slider_tick, 1, demo_maxtick() < 1 ? 1000 : demo_maxtick(), ImGui::GetWindowWidth() - (ImGui::CalcTextSize(demo_time().c_str()).x + 36), 6);
-        if (ImGui::IsItemActive() && demo_mode) 
+        if (ImGui::IsItemActive() && engine->IsPlayingDemo()) 
         {
-            engine->ConsoleCommand(std::string("demo_goto " + std::to_string(slider_tick)).c_str());
-            engine->ConsoleCommand(demo_paused ? "demo_pause" : "demo_resume");
+            engine->ClientCmd_Unrestricted(std::string("demo_goto " + std::to_string(slider_tick)).c_str());
+            engine->ClientCmd_Unrestricted(demo_paused ? "demo_pause" : "demo_resume");
         }
         else {
             slider_tick = demo_tick() < 0 ? 0 : demo_tick();
@@ -386,7 +415,7 @@ void IMGUI_RENDER()
         if (ImGui::Button("Prev", ImVec2(50, 22))) {
             if (!demo_list.empty() && demo_list_iterator.has_value() && **demo_list_iterator == loaded_demo && *demo_list_iterator != demo_list.begin()) {
                 loaded_demo = *--*demo_list_iterator;
-                engine->ConsoleCommand(("playdemo " + loaded_demo).c_str());
+                engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                 allign_list_loaded_file = true;
                 demo_paused = false;
             }
@@ -403,13 +432,13 @@ void IMGUI_RENDER()
         }
         ImGui::SameLine();
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 8 + (ImGui::GetWindowWidth() - 16 - 250) / 6);
-        if (ImGui::Button(!demo_mode ? "Play" : demo_paused ? "Resume" : "Pause", ImVec2(50, 22))) {
-            if (demo_mode) {
-                engine->ConsoleCommand("demo_togglepause");
+        if (ImGui::Button(!engine->IsPlayingDemo() ? "Play" : demo_paused ? "Resume" : "Pause", ImVec2(50, 22))) {
+            if (engine->IsPlayingDemo()) {
+                engine->ClientCmd_Unrestricted("demo_togglepause");
                 demo_paused = !demo_paused;
             }
             else if (loaded_demo != "Not loaded") { // Play button
-                engine->ConsoleCommand(("playdemo " + loaded_demo).c_str());
+                engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                 demo_paused = false;
             }
         }
@@ -428,7 +457,7 @@ void IMGUI_RENDER()
         if (ImGui::Button("Next", ImVec2(50, 22))) {
             if (!demo_list.empty() && demo_list_iterator.has_value() && **demo_list_iterator == loaded_demo && std::next(*demo_list_iterator) != demo_list.end()) {
                 loaded_demo =*++*demo_list_iterator; // holy fuck what the hell is that =*++* I swear, i will never touch iterators again
-                engine->ConsoleCommand(("playdemo " + loaded_demo).c_str());
+                engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                 allign_list_loaded_file = true;
                 demo_paused = false;
             }
@@ -458,7 +487,7 @@ void IMGUI_RENDER()
         else { switch_button_hovered = false; }
         if (ImGui::IsItemClicked()) { // on text click event
             imgui_menu = false;
-            engine->ConsoleCommand("legacy_demoui");
+            engine->ClientCmd_Unrestricted("legacy_demoui");
         }
         ImGui::SameLine();
         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() - 24, ImGui::GetWindowHeight()-20));

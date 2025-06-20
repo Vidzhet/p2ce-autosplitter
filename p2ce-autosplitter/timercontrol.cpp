@@ -63,7 +63,7 @@ void ServerSplitter::Timer::sendCommand(std::string command) {
     int sendResult = send(ConnectSocket, command.c_str(), (int)command.length(), 0);
     while (sendResult == SOCKET_ERROR) {
         //console_log("send err. Connection restored"); // debug instead of throwing exeption
-        sendResult = send(ConnectSocket, command.c_str(), (int)command.length(), 0); // attept to fix problem below
+        sendResult = send(ConnectSocket, command.c_str(), (int)command.length(), 0); // attempt to fix problem below
         //throw std::runtime_error("Failed to send message.\tWSAGetLastError: " + std::to_string(WSAGetLastError())); // throws error sometimes
         Sleep(10);
     }
@@ -296,7 +296,7 @@ void ServerSplitter::resetTimer() {
     sendCommand("reset");
 }
 
-ServerSplitter::Timer ServerSplitter::createTimer(bool debug)
+ServerSplitter::Timer ServerSplitter::createTimer()
 {
     std::shared_ptr<Timer> timer(nullptr);
     while (true) {
@@ -304,9 +304,9 @@ ServerSplitter::Timer ServerSplitter::createTimer(bool debug)
             timer = std::make_shared<Timer>();
         }
         catch (const std::runtime_error& ex) {
-            if (debug) {
-                std::cout << std::endl << ex.what();
-            }
+#ifdef DEBUG
+            std::cout << std::endl << ex.what();
+#endif
             Sleep(2000);
             continue;
         }

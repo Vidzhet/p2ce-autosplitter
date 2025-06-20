@@ -346,7 +346,7 @@ IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wPa
     case WM_SETCURSOR:
         if (LOWORD(lParam) == HTCLIENT)
         {
-            ImGui_ImplWin32_UpdateMouseCursor();
+            //ImGui_ImplWin32_UpdateMouseCursor(); // THIS SHIT WORKS BAD AF
             return 1;
         }
         return 0;

@@ -171,7 +171,7 @@ std::string getFileVersion(const std::wstring& filePath) {
     }
 }
 
-std::string demo_getname(const std::wstring& demopath) // lol i just bring this function here lolol (i dont care)
+std::string demo_getname(const std::wstring& demopath) // lol i just brought this function here
 {
     auto pos = demopath.rfind(L"\\");
 

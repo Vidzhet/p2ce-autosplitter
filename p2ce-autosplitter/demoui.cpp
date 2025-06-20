@@ -3,21 +3,56 @@
 #include "misc.h"
 #include "dx11hook/DirectX11Hook.h"
 #include "imgui_menu.h"
+#include <fstream>
+
+static int loaded_demo_maxtick_extra = 0;
+
+#pragma pack(push, 1)
+struct DemoHeader {
+    char magic[8];
+    int32_t demoProtocol;
+    int32_t networkProtocol;
+    char serverName[260];
+    char clientName[260];
+    char mapName[260];
+    char gameDirectory[260];
+    float playbackTime;
+    int32_t playbackTicks;
+    int32_t playbackFrames;
+    int32_t signonLength;
+};
+#pragma pack(pop)
+
+static inline void parseDemo(std::wstring filepath) {
+    std::ifstream file(filepath, std::ios::binary);
+    if (!file.is_open()) {
+        return;
+    }
+    DemoHeader header;
+    file.read(reinterpret_cast<char*>(&header), sizeof(DemoHeader));
+
+    loaded_demo_maxtick_extra = header.playbackFrames*2;
+
+    file.close();
+}
 
 int demo_tick()
 {
-    return *reinterpret_cast<int*>(demoTickAddress);
+    return engine->IsPlayingDemo() ? engine->GetDemoPlaybackTick() : 0;
 }
 
 int demo_maxtick()
 {
-    int clean_maxtick = *reinterpret_cast<int*>(clean_demoMaxTickAddress);
-    return clean_maxtick < 0 ? *reinterpret_cast<int*>(extra_demoMaxTickAddress)*2 : clean_maxtick;
+    /*int clean_maxtick = *reinterpret_cast<int*>(clean_demoMaxTickAddress);
+    return clean_maxtick < 0 ? *reinterpret_cast<int*>(extra_demoMaxTickAddress)*2 : clean_maxtick;*/
+    //return engine->IsPlayingDemo() ? engine->GetDemoPlaybackTotalTicks() : 0;
+    int clean_maxtick = engine->GetDemoPlaybackTotalTicks();
+    return clean_maxtick < 0 ? loaded_demo_maxtick_extra : clean_maxtick;
 }
 
 std::string demo_time()
 {
-    int seconds = *reinterpret_cast<int*>(demoTickAddress) / 60;
+    int seconds = demo_tick() / 60;
     int minutes = seconds > 59 ? seconds / 60 : 0;
     seconds = minutes > 0 ? seconds - minutes * 60 : seconds;
     return (minutes < 10 ? "0" + std::to_string(minutes) : std::to_string(minutes)) + ":" + (seconds < 10 ? "0" + std::to_string(seconds) : std::to_string(seconds));
@@ -33,24 +68,25 @@ std::string demo_maxtime()
 
 void demo_nexttick()
 {
-    engine->ConsoleCommand(std::string("demo_gototick " + std::to_string(demo_tick() + 1)).c_str());
+    engine->ClientCmd_Unrestricted(std::string("demo_gototick " + std::to_string(demo_tick() + 1)).c_str());
 }
 
 void demo_prevtick()
 {
-    engine->ConsoleCommand(std::string("demo_gototick " + std::to_string(demo_tick() - 3)).c_str());
+    engine->ClientCmd_Unrestricted(std::string("demo_gototick " + std::to_string(demo_tick() - 3)).c_str());
 }
 
 void demo_forward()
 {
-    engine->ConsoleCommand(std::string("demo_gototick " + std::to_string(demo_tick() + 120)).c_str());
+    engine->ClientCmd_Unrestricted(std::string("demo_gototick " + std::to_string(demo_tick() + 120)).c_str());
 }
 
 void demo_back()
 {
-    engine->ConsoleCommand(std::string("demo_gototick " + std::to_string(demo_tick() - 120)).c_str());
+    engine->ClientCmd_Unrestricted(std::string("demo_gototick " + std::to_string(demo_tick() - 120)).c_str());
 }
 
+// not accepting entered commands that isnt related to movement
 bool ccommand_valid()
 {
     for (const std::string& buf : ccommand_ignore) {
@@ -87,6 +123,7 @@ std::string openfile_dem(const std::wstring& initialDir, const std::wstring& cut
         }
 
         ShowWindow(mhwnd, SW_RESTORE);
+        parseDemo(filePath);
         return std::string(fullPath.begin(), fullPath.end()); // convert from wstr
     }
     ShowWindow(mhwnd, SW_RESTORE);

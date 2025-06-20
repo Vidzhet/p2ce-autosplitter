@@ -1,4 +1,6 @@
 #include "misc.h"
+#include "externs.h"
+#include <fstream>
 
 DWORD GetProcessID(const std::string& processName) {
     PROCESSENTRY32 processEntry;
@@ -48,7 +50,7 @@ uintptr_t ResolvePointerChain(HANDLE processHandle, uintptr_t baseAddress, const
     }
     return currentAddress;
 }
-uintptr_t ptrOffset(uintptr_t baseAddress, const std::vector<uintptr_t>& offsets) {
+uintptr_t memory::ptrOffset(uintptr_t baseAddress, const std::vector<uintptr_t>& offsets) {
     for (const auto& offset : offsets) {
         baseAddress = *reinterpret_cast<uintptr_t*>(baseAddress) + offset;
     }
@@ -90,7 +92,6 @@ std::string float_tostr(float value) { // code from stackoverflow ...again
 }
 
 bool compareFileNames(const std::string& a, const std::string& b) {
-    // Функция для разбивки строки на части (цифры и текст)
     auto splitParts = [](const std::string& filename) {
         std::vector<std::string> parts;
         std::string current;
@@ -113,20 +114,17 @@ bool compareFileNames(const std::string& a, const std::string& b) {
         }
 
         if (!current.empty()) {
-            parts.push_back(current); // добавляем последнюю часть
+            parts.push_back(current);
         }
 
         return parts;
         };
 
-    // Разбиваем обе строки на части
     std::vector<std::string> a_parts = splitParts(a);
     std::vector<std::string> b_parts = splitParts(b);
 
-    // Сравниваем части поочередно
     size_t i = 0;
     while (i < a_parts.size() && i < b_parts.size()) {
-        // Сравниваем по числовым значениям, если часть числа
         if (std::all_of(a_parts[i].begin(), a_parts[i].end(), ::isdigit) &&
             std::all_of(b_parts[i].begin(), b_parts[i].end(), ::isdigit)) {
             int num_a = std::stoi(a_parts[i]);
@@ -136,7 +134,6 @@ bool compareFileNames(const std::string& a, const std::string& b) {
             }
         }
         else {
-            // Сравниваем текстовые части
             if (a_parts[i] != b_parts[i]) {
                 return a_parts[i] < b_parts[i];
             }
@@ -144,6 +141,97 @@ bool compareFileNames(const std::string& a, const std::string& b) {
         ++i;
     }
 
-    // Если один из векторов длиннее, то он должен быть после
     return a_parts.size() < b_parts.size();
+}
+
+void LoadSpeedrunConfig(const wchar_t* file) {
+    std::wstring tmp(file);
+    std::wifstream in(tmp);
+
+    if (!in.is_open()) return;
+
+    std::wstring line;
+    bool in_end_section = false;
+
+    while (std::getline(in, line)) {
+        // Trim
+        line.erase(0, line.find_first_not_of(L" \t\r\n"));
+        line.erase(line.find_last_not_of(L" \t\r\n") + 1);
+
+        if (line.empty() || line[0] == L'#' || line[0] == L';')
+            continue;
+
+        if (line == L"[End]") {
+            in_end_section = true;
+            continue;
+        }
+
+        if (in_end_section) {
+            if (line[0] == L'[') break;
+
+            if (line.find(L"map=") == 0) {
+                speedrun_endMap = std::string(line.begin() + 4, line.end());
+            }
+            else if (line.find(L"entity=") == 0) {
+                speedrun_endInputEntity = std::string(line.begin() + 7, line.end());
+            }
+            else if (line.find(L"input=") == 0) {
+                speedrun_endInput = std::string(line.begin() + 6, line.end());
+            }
+        }
+    }
+}
+
+
+char* memory::find_str(const char* moduleName, const std::string& searchString) {
+    HMODULE hModule = GetModuleHandleA(moduleName);
+    if (!hModule) {
+        return nullptr;
+    }
+    MODULEINFO modInfo;
+    if (!GetModuleInformation(GetCurrentProcess(), hModule, &modInfo, sizeof(modInfo))) {
+        return nullptr;
+    }
+
+    char* start = reinterpret_cast<char*>(modInfo.lpBaseOfDll); // start of module
+    char* end = start + modInfo.SizeOfImage; // end of module
+
+    for (char* p = start; p < end - searchString.size(); ++p) {
+        if (memcmp(p, searchString.c_str(), searchString.size()) == 0) {
+            return p;
+        }
+    }
+
+    return nullptr;
+}
+
+char* memory::find_const_str(const char* moduleName, const std::string& searchString) {
+    HMODULE hModule = GetModuleHandleA(moduleName);
+    if (!hModule) {
+        return nullptr;
+    }
+    MODULEINFO modInfo;
+    if (!GetModuleInformation(GetCurrentProcess(), hModule, &modInfo, sizeof(modInfo))) {
+        return nullptr;
+    }
+
+    char* start = reinterpret_cast<char*>(modInfo.lpBaseOfDll); // Начало модуля
+    char* end = start + modInfo.SizeOfImage; // Конец модуля
+
+    MEMORY_BASIC_INFORMATION mbi;
+    for (char* p = start; p < end - searchString.size(); ++p) {
+        if (memcmp(p, searchString.c_str(), searchString.size()) == 0) {
+            // Проверяем, находится ли найденная строка в статическом сегменте (.data, .rdata)
+            if (VirtualQuery(p, &mbi, sizeof(mbi))) {
+                if (!(mbi.State & MEM_COMMIT) || (mbi.Protect & PAGE_GUARD)) {
+                    continue; // Пропускаем невыделенную память
+                }
+                // Исключаем динамическую память (heap, stack)
+                if (mbi.Type == MEM_IMAGE) {
+                    return p; // Найденный адрес в исполняемом модуле (статическая память)
+                }
+            }
+        }
+    }
+    return nullptr;
 }

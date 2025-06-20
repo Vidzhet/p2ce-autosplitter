@@ -1,6 +1,6 @@
 #pragma once
 #include <winsock2.h>
-#include <ws2tcpip.h> // Äëÿ inet_pton
+#include <ws2tcpip.h>
 
 #pragma comment(lib, "ws2_32.lib")
 #include "includes.h"
@@ -8,7 +8,7 @@
 #define CATCH_CONSOLE_DEBUG true
 #define TIMER_NOINIT true
 
-//library for send commands to livesplt
+//library for sending commands to livesplt using stupid ass tcp server
 namespace ServerSplitter {
     class Timer {
     private:
@@ -47,5 +47,5 @@ namespace ServerSplitter {
     void startTimer();
     void split();
     void resetTimer();
-    Timer createTimer(bool debug = false);
+    Timer createTimer();
 }

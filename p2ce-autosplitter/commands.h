@@ -11,63 +11,58 @@ CCOMMAND_LIST()
 {
     CCOMMAND("suka_test") {
     MessageBoxA(nullptr, "suka", "test", MB_OK);
-    } REGISTER();
+    });
 
     CCOMMAND("reset") {
-        engine->ConsoleCommand("load wakeup_save");
+        engine->ClientCmd_Unrestricted("load wakeup_save");
         speedrun_restarted = true;
-    } REGISTER();
+    });
 
-    CCOMMAND("alloc_console") { // idk it just doesnt work for some reason :/
+    CCOMMAND("alloc_console") {
         AllocConsole();
         FILE* NewStdOut = nullptr;
         freopen_s(&NewStdOut, "CONOUT$", "w", stdout);
         std::cout.clear(); // fix
-        std::cout << std::hex << statusAddress << std::dec << std::endl;
-    }REGISTER();
+    });
+
+    CCOMMAND("speedrun_signal_end") {
+        if (g_pTimer && livesplit_connected) {
+            reinterpret_cast<ServerSplitter::Timer*>(g_pTimer)->split(); // final stop timer
+        }
+        speedrun_finished = true;
+    });
 
     CCOMMAND("cout_test") {
         std::cout << "cout_test\n";
-    }REGISTER();
+    });
 
     CCOMMAND("stop_speedrun") {
         speedrun_finished = true;
-        engine->ConsoleCommand("echo Speedrun Terminated.");
-    }REGISTER();
-
-    /*CCOMMAND("cheat_autobunnyhop") { // i wont do that, i am lazy tbh
-        cheat_autobunnyhop = !cheat_autobunnyhop;
-    }REGISTER();*/
+        engine->ClientCmd_Unrestricted("echo Speedrun Terminated.");
+    });
 
     ALIAS("dis", "disconnect"); // example of usage (not an feature but still useful sometimes)
     ALIAS("legacy_demoui", "demoui"); // alias to avoid demoui command hook
     ALIAS("cheats_toggle", "incrementvar sv_cheats 0 1 1");
 
     CCOMMAND_HOOK("exit") {
-        engine->ConsoleCommand("echo bye-bye!"); // just for fun
-    } REGISTER();
+        FreeLibrary(g_hmodule);
+        engine->ClientCmd_Unrestricted("echo bye-bye!"); // just for fun
+    });
     CCOMMAND_HOOK("quit") {
-        engine->ConsoleCommand("echo bye-bye!"); // maybe ill add force kill process bc game throws segfault when shutting down
-    } REGISTER();
-    CCOMMAND_HOOK_ONLY("mat_setvideomode ") { // added extra spacing to be sure command like mat_setvideomode_something will not work.
-        if (demoui_loaded) {
-            engine->ConsoleCommand("quit"); // yes, this is very bad example of how to fix this issue. Unfortunately i cant fix this such a complicated issue in a different way.
-            system(("start steam://rungameid/" + appid).c_str()); // todo: add definition on game name etc (done)
-        }
-    } REGISTER();
+        FreeLibrary(g_hmodule);
+        engine->ClientCmd_Unrestricted("echo bye-bye!"); // maybe ill add force kill process bc game throws segfault when shutting down
+    });
     CCOMMAND_HOOK("demoui") {
-        engine->ConsoleCommand("legacy_demoui");
-        if (!demoui_loaded) {
-            dx11hook_init();
-            demoui_loaded = true;
-        }
+        engine->ClientCmd_Unrestricted("legacy_demoui"); // hiding it back
         imgui_menu = !imgui_menu;
-    } REGISTER();
+    });
     CCOMMAND("democontrol") {
-        if (!demoui_loaded) {
-            dx11hook_init();
-            demoui_loaded = true;
+        static bool do_once = true;
+        if (do_once) {
+            apply_def_pos = true;
+            do_once = false;
         }
         imgui_menu = !imgui_menu;
-    } REGISTER();
+    });
 }

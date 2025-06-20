@@ -4,6 +4,8 @@
 
 extern bool demoui_loaded;
 
+void ccommand_setup();
+
 // very dirty
 class ccommand {
 public:
@@ -31,13 +33,10 @@ private:
 #define CCOMMAND_HOOK_ONLY(name) \
     ccommand::ccommand_hook_only(name, [&]() 
 
-#define REGISTER_EXECUTE() \
-        );
 
-#define CCOMMAND_ALIAS(name, command) engine->ConsoleCommand("alias " name " " command)
+#define CCOMMAND_ALIAS(name, command) engine->ClientCmd_Unrestricted("alias " name " " command)
 
 #define CCOMMAND CCOMMAND_REGISTER
-#define REGISTER REGISTER_EXECUTE
 #define CCOMMAND_LIST void ccommand_list
 #define REGISTER_COMMANDS() ccommand_list()
 #define ALIAS CCOMMAND_ALIAS

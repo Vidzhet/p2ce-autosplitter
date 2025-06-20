@@ -1,7 +1,7 @@
 #include "console.h"
 #include "commands.h"
 
-uintptr_t ccommandBuf = NULL;
+char* ccommandBuf;
 std::vector<ccommand> ccommand::commands;
 
 ccommand::ccommand(std::string& name, std::function<void()> func, bool checkonly) {
@@ -12,7 +12,7 @@ ccommand::ccommand(std::string& name, std::function<void()> func, bool checkonly
 
 void ccommand::ccommand_register(std::string str, std::function<void()> func)
 {
-    engine->ConsoleCommand(std::string("alias " + str).c_str()); // dirty command register
+    engine->ClientCmd_Unrestricted(std::string("alias " + str).c_str()); // dirty command register
     ccommand::commands.push_back(ccommand(str, func));
 }
 
@@ -28,22 +28,33 @@ void ccommand::ccommand_hook_only(std::string str, std::function<void()> func)
 
 void ccommand::command_trigger()
 {
-    if (this->name == reinterpret_cast<char*>(ccommandBuf) || checkonly && this->name == std::string(reinterpret_cast<char*>(ccommandBuf), this->name.size())) { // if last entered command equals to registered command
+    if (this->name == ccommandBuf || checkonly && this->name == std::string(ccommandBuf, this->name.size())) { // if last entered command equals to registered command
         this->func();
-        engine->ConsoleCommand("ccommand_executed"); // changing ccommandBuf to execute func only single time
+        engine->ClientCmd_Unrestricted("ccommand_executed"); // changing ccommandBuf to execute func only single time
     }
 }
 
 char* ccommand::getLastCommand()
 {
-    return reinterpret_cast<char*>(ccommandBuf);
+    return ccommandBuf;
+}
+
+void ccommand_setup() {
+    engine->ClientCmd_Unrestricted("alias ccommand_executed"); // define ccommand in game
+    ccommandBuf = memory::find_const_str("engine.dll", "alias ccommand_executed"); // getting pointer to cbuf in engine.dll by finding it by its value
+    engine->ClientCmd_Unrestricted("ccommand_executed"); // define ccommand in game
+    while (ccommandBuf == nullptr || std::string(ccommandBuf) != "ccommand_executed") {
+        engine->ClientCmd_Unrestricted("ccommand_executed");
+        ccommandBuf = memory::find_str("engine.dll", "ccommand_executed");
+    }
+    //MessageBoxA(nullptr, "ccommand initialized", "a", MB_OK);
+    std::thread(ccommand::start).detach(); // ccommand loop thread
 }
 
 void ccommand::start()
 {
-    ccommandBuf = engineBaseAddress + 0x1B96800;
     REGISTER_COMMANDS();
-    engine->ConsoleCommand("alias ccommand_executed"); // define ccommand in game
+    std::cout << ccommandBuf << '\t' << std::hex << reinterpret_cast<uintptr_t>(ccommandBuf) << std::endl;
     while (true) {
         for (ccommand& cmd : ccommand::commands) {
             cmd.command_trigger();

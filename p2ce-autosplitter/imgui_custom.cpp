@@ -19,10 +19,12 @@ bool ImCustom::SliderInt(const char* label, int* v, int v_min, int v_max, float 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 4.6f));
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0)); // invisible(transparent) slider bg
     ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImGui::GetStyleColorVec4(ImGuiCol_SliderGrab)); // disable color change on interaction
-    //ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0.6f, 0.6f, 0.6f, 1));
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 0, 0, 0)); // invisible value inside the slider
+    //ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, ImVec4(0, 0, 0, 0));
     SliderIntResult = ImGui::SliderInt(label, v, v_min, v_max, display_format);
-    ImGui::PopStyleColor(3);
+    ImGui::PopStyleColor(5);
     ImGui::PopStyleVar();
 
     return SliderIntResult;

@@ -20,7 +20,7 @@
 #include <commdlg.h>
 #include <shlobj.h>
 #include <cctype>
-#include "ref\Engine.h"
-#include "ref\Interface.h"
+#include "eiface.h"
+#include <psapi.h>
 
 //#define DEBUG
