@@ -131,6 +131,7 @@ void IMGUI_RENDER()
         if (autoload_next_demo_allow) { // checking IsDrawingLoadingImage() on the next frame
             if (!engine->IsDrawingLoadingImage() && !demo_list.empty() && demo_list_iterator.has_value() && **demo_list_iterator == loaded_demo && std::next(*demo_list_iterator) != demo_list.end()) {
                 loaded_demo = *++ * demo_list_iterator;
+                parseDemo(gamePath + L"\\" + gameNameW + L"\\" + std::wstring(loaded_demo.begin(), loaded_demo.end()));
                 engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                 engine->ClientCmd_Unrestricted("ccommand_executed"); // hardcode fixzz
                 allign_list_loaded_file = true;
@@ -215,6 +216,7 @@ void IMGUI_RENDER()
                         demo_list_iterator = demo_list_selected_iterator;
                     }
                     if (autoplay_loaded_demo) {
+                        parseDemo(gamePath + L"\\" + gameNameW + L"\\" + std::wstring(loaded_demo.begin(), loaded_demo.end()));
                         engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                         demo_paused = false;
                     }
@@ -249,6 +251,7 @@ void IMGUI_RENDER()
                         demo_list_iterator = it;
                         list_selected_file.clear();
                         if (autoplay_loaded_demo) { 
+                            parseDemo(gamePath + L"\\" + gameNameW + L"\\" + std::wstring(loaded_demo.begin(), loaded_demo.end()));
                             engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str()); 
                             demo_paused = false;
                         }
@@ -415,6 +418,7 @@ void IMGUI_RENDER()
         if (ImGui::Button("Prev", ImVec2(50, 22))) {
             if (!demo_list.empty() && demo_list_iterator.has_value() && **demo_list_iterator == loaded_demo && *demo_list_iterator != demo_list.begin()) {
                 loaded_demo = *--*demo_list_iterator;
+                parseDemo(gamePath + L"\\" + gameNameW + L"\\" + std::wstring(loaded_demo.begin(), loaded_demo.end()));
                 engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                 allign_list_loaded_file = true;
                 demo_paused = false;
@@ -438,6 +442,7 @@ void IMGUI_RENDER()
                 demo_paused = !demo_paused;
             }
             else if (loaded_demo != "Not loaded") { // Play button
+                parseDemo(gamePath + L"\\" + gameNameW + L"\\" + std::wstring(loaded_demo.begin(), loaded_demo.end()));
                 engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                 demo_paused = false;
             }
@@ -457,6 +462,7 @@ void IMGUI_RENDER()
         if (ImGui::Button("Next", ImVec2(50, 22))) {
             if (!demo_list.empty() && demo_list_iterator.has_value() && **demo_list_iterator == loaded_demo && std::next(*demo_list_iterator) != demo_list.end()) {
                 loaded_demo =*++*demo_list_iterator; // holy fuck what the hell is that =*++* I swear, i will never touch iterators again
+                parseDemo(gamePath + L"\\" + gameNameW + L"\\" + std::wstring(loaded_demo.begin(), loaded_demo.end()));
                 engine->ClientCmd_Unrestricted(("playdemo " + loaded_demo).c_str());
                 allign_list_loaded_file = true;
                 demo_paused = false;
