@@ -61,14 +61,15 @@ void monitorStatus(ServerSplitter::Timer& timer)
 bool monitorBspRunning = false;
 // rewrite of monitorMap, now it uses exactly map bsp names instead of map ids
 void monitorBsp(ServerSplitter::Timer& timer) {
-    monitorBspRunning = true;
+    //monitorBspRunning = true;
     std::cout << "bspThread started.\n";
     int splitIndexBuf;
     bool nextmap = false;
     std::string mapname_buffer;
     std::string mapname;
-    std::vector<std::string> mapsbuffer = { "sp_a1_begin" };
+    std::vector<std::string> mapsbuffer = { "" };
     while (true) {
+        if (!monitorBspRunning && engine->IsInGame()) { mapsbuffer.push_back(engine->GetLevelNameShort()); monitorBspRunning = true; }
         if (engine->IsInGame()) { mapname = engine->GetLevelNameShort(); } // when next map is loading, GetLevelName() may not return any value and it will be unknown ptr so thats fix
         if (speedrun_restarted || speedrun_finished || !livesplit_connected) { break; }
         // if current map not in mapsbuffer
